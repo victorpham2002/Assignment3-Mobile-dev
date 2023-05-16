@@ -12,7 +12,7 @@ export const Welcome = (props: {
     <View style={styles.container}>
       <Text>{i18n.t(LocalizationKey.WELCOME)}</Text>
       <StatusBar style="auto" />
-      <Button onPress={() => props.onNavigate(RootScreens.MAIN)}>
+      <Button onPress={() => props.onNavigate(RootScreens.HOME)}>
         {i18n.t(LocalizationKey.START)}
       </Button>
     </View>
