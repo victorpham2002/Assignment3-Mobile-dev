@@ -8,6 +8,8 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+
+.yarn
 web-build/
 
 # macOS
