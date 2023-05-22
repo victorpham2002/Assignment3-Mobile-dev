@@ -1,5 +1,5 @@
 import { i18n, LocalizationKey } from "@/Localization";
-import React, { useState } from "react";
+import React, { useEffect , useState } from "react";
 import {
   View,
   Text,
@@ -20,127 +20,40 @@ import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
 
-export interface ItemData {
-    id: string;
-    title: string;
-    description: string;
-    time: string;
-    price: string;    
-    onNavigate: any
-}
+
 
 export interface ILoginProps {
   isLoading: boolean;
-  onNavigate: (string: RootScreens) => void;
+  onNavigate: (string: RootScreens, route: Number) => void;
 }
 
-export interface NavProps {
-  onNavigate: (string: RootScreens) => void;
-}
-
-let DATA: ItemData[] = [
-    {
-      id: '1',
-      title: 'Tuyến số 08',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '2',
-      title: 'Tuyến số 32',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '3',
-      title: 'Tuyến số 33',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '4',
-      title: 'Tuyến số 34',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '5',
-      title: 'Tuyến số 35',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '6',
-      title: 'Tuyến số 32',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '7',
-      title: 'Tuyến số 33',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-    {
-      id: '8',
-      title: 'Tuyến số 34',
-      description: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '04:00 - 19:30',
-      price: '7000',
-      onNavigate: undefined,
-    },
-  ];
-
-  const RenderItem = ({item}: {item: ItemData}) => (
-    <TouchableOpacity 
-      onPress={() => {
-        item.onNavigate(RootScreens.STATIONDETAIL);
-      }}
-      style={styles.item}>
-      
-      <Text style={styles.itemTitle}>{item.title}</Text>
-      <Text style={styles.itemDescription}>{item.description}</Text>
-      <View style={styles.subBusInfoContainer}>
-        <View style={styles.subBusInfo}>
-          <Image
-            source={require('../../../assets/iconClock.png')}
-            style={styles.iconClock}
-          />
-          <Text style={styles.itemDescription}>{item.time}</Text>
-        </View>
-        <View style={styles.subBusInfo}>
-          <Image
-            source={require('../../../assets/iconMoney.png')}
-            style={styles.iconMoney}
-          />
-          <Text style={styles.itemDescription}>{item.price} VND</Text>
-        </View>
-      </View>
-  
-    </TouchableOpacity>
-  );
+type Route = {
+  RouteId: number;
+  RouteNo: string;
+  RouteName: string;
+  Tickets: string;
+  OperationTime: string;
+};
 
   export const StationList = (props: ILoginProps) => {
     const { isLoading, onNavigate } = props;
     const [stationName, onChangeStationName] = useState("");
 
-    for (let i = 0; i < DATA.length; i++) {
-      DATA[i]['onNavigate'] = onNavigate;
-    }
+
+    const [data, setData] = useState<Route[]>([]);
+    const getAllRoute = async () => {
+      try {
+        const response = await fetch('http://192.168.1.5:3000/routes');
+        const json = await response.json();
+        setData(json);
+      } catch (error) {
+        console.error(error);
+      } 
+    };
+
+    useEffect(() => {
+      getAllRoute();
+    }, []);
 
     return (
       <View style={styles.container}>
@@ -170,11 +83,38 @@ let DATA: ItemData[] = [
 
         <SafeAreaView style={styles.searchResultContainner}>
           <FlatList
-            data={DATA}
-            renderItem={RenderItem}
+            
+            data={data}
+            renderItem={({item}) => (
+              <TouchableOpacity 
+                onPress={() => {
+                  onNavigate(RootScreens.STATIONDETAIL, item.RouteId);
+                }}
+                style={styles.item}>
+                
+                <Text style={styles.itemTitle}>Tuyến số {item.RouteNo}</Text>
+                <Text style={styles.itemDescription}>{item.RouteName}</Text>
+                <View style={styles.subBusInfoContainer}>
+                  <View style={styles.subBusInfo}>
+                    <Image
+                      source={require('../../../assets/iconClock.png')}
+                      style={styles.iconClock}
+                    />
+                    <Text style={styles.itemDescription}>{item.OperationTime}</Text>
+                  </View>
+                  <View style={styles.subBusInfo}>
+                    <Image
+                      source={require('../../../assets/iconMoney.png')}
+                      style={styles.iconMoney}
+                    />
+                    <Text style={styles.itemDescription}>{item.Tickets}</Text>
+                  </View>
+                </View>
+            
+              </TouchableOpacity>
+            )}
           />
         </SafeAreaView>
-
       </View>
     );
   };

@@ -1,5 +1,5 @@
 import { i18n, LocalizationKey } from "@/Localization";
-import React, { useState } from "react";
+import React, { useEffect , useState } from "react";
 import {
   View,
   Text,
@@ -20,10 +20,9 @@ import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
 
-
 export interface ILoginProps {
-  isLoading: boolean;
-  onNavigate: (string: RootScreens) => void;
+  route: number;
+  setOptions: (route: number) => void;
 }
 
 const StationData = {
@@ -41,6 +40,26 @@ const StationData = {
     goRoute: ['Bến xe An sương', 'Kí túc xá khu A', 'Trường Đại học Bách Khoa Thành Phố Hồ Chí Minh'],
     returnRoute : ['Bến xe An sương', 'Kí túc xá khu A', 'Kí túc xá khu A'],
   }
+
+type RouteDetail = {
+  RouteId: number;
+  RouteNo: string;
+  RouteName: string;
+  Color: string;
+  Type: string;
+  Distance: number;
+  Orgs: string;
+  TimeOfTrip: string;
+  Headway: string;
+  OperationTime: string;
+  NumOfSeats: string;
+  OutBoundName: string;
+  InBoundName: string;
+  OutBoundDescription: [string];
+  InBoundDescription: [string];
+  TotalTrip: string;
+  Tickets: [string];
+};
 
   const StationGoRoute = ({item}: {item: string}) => (
     <View style={styles.routeContainer}>
@@ -71,47 +90,15 @@ const StationData = {
     </View>
   );
 
-  const StationInfo = () => (
-    <View style={styles.singleRouteContainer}>
-      <Text style={styles.boldText}>Tuyến số
-        <Text style={styles.normalText}>
-          : {StationData.description.number} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Tên chuyến
-        <Text style={styles.normalText}>
-          : {StationData.description.name} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Thời gian hoạt động
-        <Text style={styles.normalText}>
-          : {StationData.description.time} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Giá vé 
-        <Text style={styles.normalText}>
-          : {StationData.description.price} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Giá vé (Học sinh/sinh viên) 
-        <Text style={styles.normalText}>
-          : {StationData.description.studentPrice} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Giãn cách tuyến
-        <Text style={styles.normalText}>
-          : {StationData.description.timePerTrip} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Số chuyến
-        <Text style={styles.normalText}>
-          : {StationData.description.numberOfTrip} 
-        </Text>
-      </Text>
-    </View>
+  const StationTicket = ({item}: {item: string}) => (
+    <Text style={styles.normalText}>
+      {item}
+    </Text>
   );
 
-  export const StationDetail = () => {
+  export const StationDetail = (props: ILoginProps) => {
+    const { route , setOptions } = props;
+
     const [routeStatus, setRouteStatus] = useState('Go');
     const [navBarStatus, setnavBarStatus] = useState('Time');
 
@@ -122,6 +109,23 @@ const StationData = {
     const changeNavBarStatus = (navBarNewState: string) => {
         setnavBarStatus(navBarNewState);
     }
+
+    const [data, setData] = useState<RouteDetail>();
+    const getRoute = async () => {
+      try {
+        const response = await fetch(`http://192.168.1.5:3000/routes/${route}`);
+        const json = await response.json();
+        setData(json);
+        setOptions(route);
+      } catch (error) {
+        console.error(error);
+      } 
+    };
+
+    useEffect(() => {
+      getRoute();
+    }, []);
+
 
     return (
       <View style={styles.container}>
@@ -141,7 +145,7 @@ const StationData = {
         </View>
 
         <View style={styles.BasicInfoContainer}>
-            <Text style={styles.normalText}>Bến xe Miền Tây - Bến xe Ngã Tư Ga</Text>      
+            <Text style={styles.normalText}>{data?.RouteName}</Text>         
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => changeRouteStatus()}
@@ -210,12 +214,12 @@ const StationData = {
         <SafeAreaView style={styles.DetailInfoContainer}>
             { navBarStatus === 'Route' ? routeStatus === 'Go' ? (
                 <FlatList 
-                data={StationData.goRoute}
+                data={data?.InBoundDescription}
                 renderItem={StationGoRoute}
                 />     
             ) : (
                 <FlatList
-                data={StationData.returnRoute}
+                data={data?.OutBoundDescription}
                 renderItem={StationGoRoute}
                 />               
             ) : navBarStatus === 'Time' ? (
@@ -224,8 +228,38 @@ const StationData = {
                 renderItem={StationTimeRoute}
                 />               
             ) : (
-                <StationInfo
-                />               
+              <View style={styles.singleRouteContainer}>
+              <Text style={styles.boldText}>Tuyến số
+                <Text style={styles.normalText}>
+                  : {data?.RouteId} 
+                </Text>
+              </Text>
+              <Text style={styles.boldText}>Tên chuyến
+                <Text style={styles.normalText}>
+                  : {data?.RouteName} 
+                </Text>
+              </Text>
+              <Text style={styles.boldText}>Thời gian hoạt động
+                <Text style={styles.normalText}>
+                  : {data?.OperationTime} 
+                </Text>
+              </Text>
+              {data?.Tickets.map(item => (
+                <Text style={styles.normalText} key={item}>
+                  {item}
+                </Text>
+              ))}
+              <Text style={styles.boldText}>Giãn cách tuyến
+                <Text style={styles.normalText}>
+                  : {data?.TimeOfTrip} 
+                </Text>
+              </Text>
+              <Text style={styles.boldText}>Số chuyến
+                <Text style={styles.normalText}>
+                  : {data?.TotalTrip} 
+                </Text>
+              </Text>
+            </View>          
             )}
         </SafeAreaView>
 
