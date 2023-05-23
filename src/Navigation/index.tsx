@@ -63,10 +63,6 @@ const ApplicationNavigator = () => {
           component={Login}
         />
         <RootStack.Screen
-          name={RootScreens.LOGIN}
-          component={Login}
-        />
-        <RootStack.Screen
           name={RootScreens.HOME}
           component={HomeContainer}
         />
