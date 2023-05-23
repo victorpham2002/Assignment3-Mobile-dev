@@ -8,12 +8,16 @@ import { RootScreens } from "@/Screens";
 import { HomeContainer } from "@/Screens/Home";
 import {Login} from "@/Screens/Login";
 import { Register } from "@/Screens/Register";
+import { StationListContainer } from "@/Screens/StationList";
+import { StationDetailContainer } from "@/Screens/StationDetail";
 
 export type RootStackParamList = {
   [RootScreens.WELCOME]: undefined;
   [RootScreens.HOME]: undefined;
   [RootScreens.LOGIN]: undefined;
   [RootScreens.REGISTER]: undefined;
+  [RootScreens.STATIONLIST]: undefined;
+  [RootScreens.STATIONDETAIL]: undefined;
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -23,7 +27,41 @@ const ApplicationNavigator = () => {
   return (
     <NavigationContainer>
       <StatusBar />
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootStack.Navigator>
+        <RootStack.Screen
+          name={RootScreens.STATIONLIST}
+          component={StationListContainer}
+          options={{
+            title: 'Danh sách tuyến xe',
+            headerStyle: {
+              backgroundColor: '#1570EF',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
+        <RootStack.Screen
+          name={RootScreens.STATIONDETAIL}
+          component={StationDetailContainer}
+          options={{
+            title: 'Tuyến số 33',
+            headerStyle: {
+              backgroundColor: '#1570EF',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
+        <RootStack.Screen
+          name={RootScreens.LOGIN}
+          component={Login}
+        />
         <RootStack.Screen
           name={RootScreens.LOGIN}
           component={Login}
