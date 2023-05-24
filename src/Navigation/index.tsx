@@ -17,7 +17,7 @@ export type RootStackParamList = {
   [RootScreens.LOGIN]: undefined;
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
-  [RootScreens.STATIONDETAIL]: undefined;
+  [RootScreens.STATIONDETAIL]: {id: string} | undefined;
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -27,53 +27,60 @@ const ApplicationNavigator = () => {
   return (
     <NavigationContainer>
       <StatusBar />
-      <RootStack.Navigator>
+      <RootStack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#1570EF',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+          headerTitleAlign: 'center',
+        }}
+      >
         <RootStack.Screen
           name={RootScreens.STATIONLIST}
           component={StationListContainer}
           options={{
             title: 'Danh sách tuyến xe',
-            headerStyle: {
-              backgroundColor: '#1570EF',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
-            headerTitleAlign: 'center',
           }}
         />
         <RootStack.Screen
           name={RootScreens.STATIONDETAIL}
           component={StationDetailContainer}
+          initialParams={{route: '33'} as any}
           options={{
-            title: 'Tuyến số 33',
-            headerStyle: {
-              backgroundColor: '#1570EF',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
-            headerTitleAlign: 'center',
+            title: 'Tuyến số',
           }}
         />
         <RootStack.Screen
           name={RootScreens.LOGIN}
           component={Login}
+          options={{
+            headerShown: false,
+          }}
         />
         <RootStack.Screen
           name={RootScreens.HOME}
           component={HomeContainer}
+          options={{
+            headerShown: false,
+          }}
         />
         <RootStack.Screen
           name={RootScreens.REGISTER}
           component={Register}
+          options={{
+            headerShown: false,
+          }}
         />
-
         <RootStack.Screen
           name={RootScreens.WELCOME}
           component={WelcomeContainer}
+          options={{
+            headerShown: false,
+          }}
         />
       </RootStack.Navigator>
     </NavigationContainer>
