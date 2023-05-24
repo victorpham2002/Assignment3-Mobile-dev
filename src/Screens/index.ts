@@ -8,4 +8,5 @@ export enum RootScreens {
   ROUTE_SEARCH_RESULT = 'RouteSearchResult',
   ROUTE_SEARCH = 'RouteSearch',
   ROUTE_DETAIL = 'RouteDetail',
+  ONBOARDING = 'Onboarding'
 }

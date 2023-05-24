@@ -19,27 +19,20 @@ import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
+<<<<<<< HEAD
 import { Config } from "@/Config";
+=======
+import { Item } from "react-native-paper/lib/typescript/src/components/Drawer/Drawer";
+>>>>>>> 310d6805031d5422f8a1419abf0ead3066d81559
 
 export interface ILoginProps {
-  route: number;
-  setOptions: (route: number) => void;
+  route: string;
+  setOptions: (route: string) => void;
 }
+const API_ENDPOINT = "https://assignment3-mobiledev-nhom1-busappapi.onrender.com/routes/";
 
 const StationData = {
-    title: 'Tuyến số 08',
-    description: {
-      number: '32',
-      name: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '05:40 - 20:30',
-      price: '7000',
-      studentPrice: '3000',
-      timePerTrip: '6 - 10 min',
-      numberOfTrip: '86',
-    },
-    timeTable: ['1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '22:00'],
-    goRoute: ['Bến xe An sương', 'Kí túc xá khu A', 'Trường Đại học Bách Khoa Thành Phố Hồ Chí Minh'],
-    returnRoute : ['Bến xe An sương', 'Kí túc xá khu A', 'Kí túc xá khu A'],
+    timeTable: ['6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'],
   }
 
 type RouteDetail = {
@@ -64,19 +57,24 @@ type RouteDetail = {
 
   const StationGoRoute = ({item}: {item: string}) => (
     <View style={styles.routeContainer}>
-      <Image
+      { item === 'Không có thông tin' ? (
+        <View>
+        </View>
+      ) : (
+        <Image
         source={require('../../../assets/Uncheck.png')}
         style={styles.CheckImg}
       />
+      )}
       <Text style={styles.normalText}>{item}</Text>
     </View>
   );
 
-  var time = new Date();
+  const hours = new Date().getHours();
 
   const StationTimeRoute = ({item}: {item: string}) => (
     <View style={styles.routeContainer}>
-      { item.split(":")[0] < '4' ? (
+      { parseInt(item.split(":")[0], 10) <= hours ? (
         <Image
           source={require('../../../assets/Check.png')}
           style={styles.CheckImg}
@@ -112,10 +110,19 @@ type RouteDetail = {
     }
 
     const [data, setData] = useState<RouteDetail>();
+    const URL = API_ENDPOINT + route;
     const getRoute = async () => {
       try {
+<<<<<<< HEAD
         const response = await fetch(`${Config.BACKEND_URL}/routes/${route}`);
+=======
+        const response = await fetch(URL);
+>>>>>>> 310d6805031d5422f8a1419abf0ead3066d81559
         const json = await response.json();
+        if (json.Tickets === "") {
+          json.Tickets = []
+        }
+
         setData(json);
         setOptions(route);
       } catch (error) {
@@ -215,24 +222,26 @@ type RouteDetail = {
         <SafeAreaView style={styles.DetailInfoContainer}>
             { navBarStatus === 'Route' ? routeStatus === 'Go' ? (
                 <FlatList 
-                data={data?.InBoundDescription}
+                data={data?.InBoundDescription ? data?.InBoundDescription : ['Không có thông tin']}
                 renderItem={StationGoRoute}
                 />     
             ) : (
                 <FlatList
-                data={data?.OutBoundDescription}
+                data={data?.OutBoundDescription ? data?.OutBoundDescription : ['Không có thông tin']}
                 renderItem={StationGoRoute}
                 />               
             ) : navBarStatus === 'Time' ? (
                 <FlatList
                 data={StationData.timeTable}
                 renderItem={StationTimeRoute}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 />               
             ) : (
               <View style={styles.singleRouteContainer}>
               <Text style={styles.boldText}>Tuyến số
                 <Text style={styles.normalText}>
-                  : {data?.RouteId} 
+                  : {data?.RouteNo} 
                 </Text>
               </Text>
               <Text style={styles.boldText}>Tên chuyến
@@ -240,26 +249,50 @@ type RouteDetail = {
                   : {data?.RouteName} 
                 </Text>
               </Text>
+              {data?.OperationTime ? (
               <Text style={styles.boldText}>Thời gian hoạt động
                 <Text style={styles.normalText}>
                   : {data?.OperationTime} 
                 </Text>
               </Text>
+              ) : (
+              <Text style={styles.boldText}>Thời gian hoạt động
+                <Text style={styles.normalText}>
+                  : Không có thông tin 
+                </Text>
+              </Text>
+              )}
               {data?.Tickets.map(item => (
                 <Text style={styles.normalText} key={item}>
-                  {item}
+                  {item ? item : 'No'}
                 </Text>
               ))}
+              {data?.TimeOfTrip ? (
               <Text style={styles.boldText}>Giãn cách tuyến
                 <Text style={styles.normalText}>
                   : {data?.TimeOfTrip} 
                 </Text>
               </Text>
+              ) : (
+              <Text style={styles.boldText}>Giãn cách tuyến
+                <Text style={styles.normalText}>
+                  : Không có thông tin 
+                </Text>
+              </Text>
+              )}
+              {data?.TotalTrip ? (
               <Text style={styles.boldText}>Số chuyến
                 <Text style={styles.normalText}>
                   : {data?.TotalTrip} 
                 </Text>
               </Text>
+              ) : (
+              <Text style={styles.boldText}>Số chuyến
+                <Text style={styles.normalText}>
+                  : Không có thông tin 
+                </Text>
+              </Text>
+              )}
             </View>          
             )}
         </SafeAreaView>
