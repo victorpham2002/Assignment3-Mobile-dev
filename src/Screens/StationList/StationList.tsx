@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { HStack, Spinner, Heading } from "native-base";
@@ -19,12 +20,11 @@ import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
-
-
+import filter from 'lodash.filter';
 
 export interface ILoginProps {
   isLoading: boolean;
-  onNavigate: (string: RootScreens, route: Number) => void;
+  onNavigate: (string: RootScreens.STATIONDETAIL, route: string) => void;
 }
 
 type Route = {
@@ -35,35 +35,124 @@ type Route = {
   OperationTime: string;
 };
 
+function renderHeader() {
+  const [query, setQuery] = useState('');
+  const [fullData, setFullData] = useState([]);
+
+  return (
+    <View style={styles.searchBarContainner}>
+    <View style={styles.inputTextContainer}>
+      <TextInput
+        value={query}
+        onChangeText={setQuery}
+        placeholderTextColor="#C6C6C6"
+        placeholder="Tìm kiếm bến xe buýt"
+        style={{
+          ...styles.inputText,
+          ...Platform.select({
+            ios: { ...styles.iosShadow },
+            android: { ...styles.androidShadow },
+          }),
+        }}
+      />
+      <MuiIcons
+        style={styles.searchIcon}
+        name="search"
+        color="#C6C6C6"
+        size={24}
+      />
+    </View>
+  </View>
+  );
+}
+
   export const StationList = (props: ILoginProps) => {
-    const { isLoading, onNavigate } = props;
+    const { onNavigate } = props;
     const [stationName, onChangeStationName] = useState("");
-
-
+  
     const [data, setData] = useState<Route[]>([]);
-    const getAllRoute = async () => {
-      try {
-        const response = await fetch('http://192.168.1.5:3000/routes');
-        const json = await response.json();
-        setData(json);
-      } catch (error) {
-        console.error(error);
-      } 
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const [query, setQuery] = useState('');
+    const [fullData, setFullData] = useState([]);
+
+    const handleSearch = (text: string) => {
+      const formattedQuery = text.toLowerCase();
+      /*const filteredData = filter(fullData, user => {
+        return contains(user, formattedQuery);
+      });*/
+      /*const filteredData = filter(fullData, ['RouteNo', formattedQuery]);*/
+      const filteredData = filter(fullData, route => contains(route, formattedQuery));
+
+      setData(filteredData);
+      setQuery(text);
+    };
+
+    const contains = ( route: any , query : string) => {
+      const RouteNo = route['RouteNo'].toLowerCase();
+      const RouteName = route['RouteName'].toLowerCase();
+
+      if (RouteNo.includes(query)) {
+        return true;
+      }
+      if (RouteName.includes(query)) {
+        return true;
+      }
+      return false;
     };
 
     useEffect(() => {
-      getAllRoute();
+      setIsLoading(true);
+
+      fetch('http://192.168.1.5:3000/routes')
+        .then(response => response.json())
+        .then(results => {
+          const sortedResult = results.sort((a: { RouteNo: string; }, b: { RouteNo: string; }) =>
+            a.RouteNo > b.RouteNo ? 1 : -1,
+          );
+          setData(sortedResult);
+          setFullData(sortedResult);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
     }, []);
 
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
+    }
+    /*
+    useEffect(() => {
+      getAllRoute();
+    }, []);
+    */
     return (
       <View style={styles.container}>
         <View style={styles.searchBarContainner}>
           <View style={styles.inputTextContainer}>
             <TextInput
-              value={stationName}
-              onChangeText={onChangeStationName}
+              value={query}
+              onChangeText={queryText => handleSearch(queryText)}
               placeholderTextColor="#C6C6C6"
               placeholder="Tìm kiếm bến xe buýt"
+              clearButtonMode="always"
               style={{
                 ...styles.inputText,
                 ...Platform.select({
@@ -83,32 +172,48 @@ type Route = {
 
         <SafeAreaView style={styles.searchResultContainner}>
           <FlatList
-            
             data={data}
+            keyExtractor={item => item.RouteNo}
             renderItem={({item}) => (
               <TouchableOpacity 
                 onPress={() => {
-                  onNavigate(RootScreens.STATIONDETAIL, item.RouteId);
+                  onNavigate(RootScreens.STATIONDETAIL, item.RouteNo);
                 }}
                 style={styles.item}>
                 
                 <Text style={styles.itemTitle}>Tuyến số {item.RouteNo}</Text>
                 <Text style={styles.itemDescription}>{item.RouteName}</Text>
                 <View style={styles.subBusInfoContainer}>
-                  <View style={styles.subBusInfo}>
-                    <Image
-                      source={require('../../../assets/iconClock.png')}
-                      style={styles.iconClock}
-                    />
-                    <Text style={styles.itemDescription}>{item.OperationTime}</Text>
-                  </View>
-                  <View style={styles.subBusInfo}>
-                    <Image
-                      source={require('../../../assets/iconMoney.png')}
-                      style={styles.iconMoney}
-                    />
-                    <Text style={styles.itemDescription}>{item.Tickets}</Text>
-                  </View>
+                  {
+                    item.OperationTime ? (
+                      <View style={styles.subBusInfo}>
+                        <Image
+                          source={require('../../../assets/iconClock.png')}
+                          style={styles.iconClock}
+                        />
+                        <Text style={styles.itemDescription}> {item.OperationTime}</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.subBusInfo}>
+
+                      </View>                      
+                    )
+                  }
+                  {
+                    item.Tickets ? (
+                      <View style={styles.subBusInfo}>
+                        <Image
+                          source={require('../../../assets/iconMoney.png')}
+                          style={styles.iconMoney}
+                        />
+                        <Text style={styles.itemDescription}>{item.Tickets}</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.subBusInfo}>
+
+                      </View>                      
+                    )
+                  }
                 </View>
             
               </TouchableOpacity>
