@@ -25,6 +25,7 @@ export interface ILoginProps {
   route: string;
   setOptions: (route: string) => void;
 }
+const API_ENDPOINT = "https://assignment3-mobiledev-nhom1-busappapi.onrender.com/routes/";
 
 const StationData = {
     timeTable: ['6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'],
@@ -69,7 +70,7 @@ type RouteDetail = {
 
   const StationTimeRoute = ({item}: {item: string}) => (
     <View style={styles.routeContainer}>
-      { parseInt(item.split(":")[0], 10) < hours ? (
+      { parseInt(item.split(":")[0], 10) <= hours ? (
         <Image
           source={require('../../../assets/Check.png')}
           style={styles.CheckImg}
@@ -105,9 +106,10 @@ type RouteDetail = {
     }
 
     const [data, setData] = useState<RouteDetail>();
+    const URL = API_ENDPOINT + route;
     const getRoute = async () => {
       try {
-        const response = await fetch(`http://192.168.1.5:3000/routes/${route}`);
+        const response = await fetch(URL);
         const json = await response.json();
         if (json.Tickets === "") {
           json.Tickets = []
