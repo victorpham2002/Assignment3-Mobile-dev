@@ -4,5 +4,6 @@ export enum RootScreens {
   LOGIN = 'Login',
   REGISTER = 'Register',
   STATIONLIST = 'StationList',
-  STATIONDETAIL = 'StationDetail'
+  STATIONDETAIL = 'StationDetail',
+  ONBOARDING = 'Onboarding'
 }
