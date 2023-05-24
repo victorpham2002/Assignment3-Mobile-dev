@@ -10,6 +10,9 @@ import {Login} from "@/Screens/Login";
 import { Register } from "@/Screens/Register";
 import { StationListContainer } from "@/Screens/StationList";
 import { StationDetailContainer } from "@/Screens/StationDetail";
+import RouteSearchResultContainer from "@/Screens/RouteSearchResult/RouteSearchResultContainer";
+import RouteDetailContainer from "@/Screens/RouteDetail/RouteDetailContainer";
+import RouteSearchContainer from "@/Screens/RouteSearch/RouteSearchContainer";
 
 export type RootStackParamList = {
   [RootScreens.WELCOME]: undefined;
@@ -18,6 +21,10 @@ export type RootStackParamList = {
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
   [RootScreens.STATIONDETAIL]: undefined;
+  [RootScreens.ROUTE_SEARCH_RESULT]: undefined;
+  [RootScreens.ROUTE_SEARCH]: undefined;
+  [RootScreens.ROUTE_DETAIL]: undefined;
+
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -27,7 +34,7 @@ const ApplicationNavigator = () => {
   return (
     <NavigationContainer>
       <StatusBar />
-      <RootStack.Navigator>
+      <RootStack.Navigator initialRouteName={RootScreens.ROUTE_SEARCH}>
         <RootStack.Screen
           name={RootScreens.STATIONLIST}
           component={StationListContainer}
@@ -74,6 +81,38 @@ const ApplicationNavigator = () => {
         <RootStack.Screen
           name={RootScreens.WELCOME}
           component={WelcomeContainer}
+        />
+
+        <RootStack.Screen
+          name={RootScreens.ROUTE_SEARCH_RESULT}
+          component={RouteSearchResultContainer}
+          options={{
+            title: 'Tìm đường',
+            headerStyle: {
+              backgroundColor: '#1570EF',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
+
+        <RootStack.Screen
+          name={RootScreens.ROUTE_DETAIL}
+          component={RouteDetailContainer}
+          options={{
+            headerShown: false
+          }}
+        />
+
+        <RootStack.Screen
+        name={RootScreens.ROUTE_SEARCH}
+        component={RouteSearchContainer}
+        options={{
+          headerShown: false
+        }}
         />
       </RootStack.Navigator>
     </NavigationContainer>

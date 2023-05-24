@@ -19,7 +19,8 @@ import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
-
+import { Config } from "@/Config";
+import axios from "axios";
 
 
 export interface ILoginProps {
@@ -43,7 +44,7 @@ type Route = {
     const [data, setData] = useState<Route[]>([]);
     const getAllRoute = async () => {
       try {
-        const response = await fetch('http://192.168.1.5:3000/routes');
+        const response = await fetch(`${Config.BACKEND_URL}/routes`);
         const json = await response.json();
         setData(json);
       } catch (error) {

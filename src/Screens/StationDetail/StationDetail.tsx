@@ -19,6 +19,7 @@ import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
+import { Config } from "@/Config";
 
 export interface ILoginProps {
   route: number;
@@ -113,7 +114,7 @@ type RouteDetail = {
     const [data, setData] = useState<RouteDetail>();
     const getRoute = async () => {
       try {
-        const response = await fetch(`http://192.168.1.5:3000/routes/${route}`);
+        const response = await fetch(`${Config.BACKEND_URL}/routes/${route}`);
         const json = await response.json();
         setData(json);
         setOptions(route);
