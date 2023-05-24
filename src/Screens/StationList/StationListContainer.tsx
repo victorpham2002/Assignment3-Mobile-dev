@@ -11,7 +11,7 @@ type LoginScreenNavigatorProps = NativeStackScreenProps<
 
 export const StationListContainer = ({ navigation }: LoginScreenNavigatorProps) => {
   const onNavigate = (screen: RootScreens, route: Number) => {
-    navigation.navigate(screen);
+    navigation.navigate(screen as any);
   };
 
   return <StationList isLoading={false} onNavigate={onNavigate} />;
