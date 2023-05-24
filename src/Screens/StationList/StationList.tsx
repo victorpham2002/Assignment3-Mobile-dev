@@ -26,6 +26,7 @@ export interface ILoginProps {
   isLoading: boolean;
   onNavigate: (string: RootScreens.STATIONDETAIL, route: string) => void;
 }
+const API_ENDPOINT = "https://assignment3-mobiledev-nhom1-busappapi.onrender.com/";
 
 type Route = {
   RouteId: number;
@@ -105,7 +106,7 @@ function renderHeader() {
     useEffect(() => {
       setIsLoading(true);
 
-      fetch('http://192.168.1.5:3000/routes')
+      fetch(`${API_ENDPOINT}routes`)
         .then(response => response.json())
         .then(results => {
           const sortedResult = results.sort((a: { RouteNo: string; }, b: { RouteNo: string; }) =>
