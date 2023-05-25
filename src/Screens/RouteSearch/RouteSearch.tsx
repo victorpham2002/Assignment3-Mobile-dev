@@ -1,10 +1,193 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native'
 import React from 'react'
+import MuiIcons from "@expo/vector-icons/MaterialIcons";
+import { useNavigation } from '@react-navigation/native';
 
 const RouteSearch = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}> 
-      <Text>RouteSearch</Text>
+      <View style={{flexDirection: 'row', padding: 10, alignItems: 'center'}}>
+        <TouchableOpacity>
+          <MuiIcons
+          name={'arrow-back'}
+          color={'#1570EF'}
+          size={24}
+          onPress={() => navigation.goBack()}
+          />
+        </TouchableOpacity>
+        <TextInput
+        // value={fromInput}
+        // onChangeText={text => setFromInput(text)}
+        placeholderTextColor="#C6C6C6"
+        placeholder="Nhập vị trí của bạn"
+        style={{flex: 1, backgroundColor: '#fff', fontSize: 16, paddingVertical: 3, paddingLeft: 10, marginLeft: 10, borderRadius: 10}}
+        />
+      </View>
+      
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, width: '100%'}}>
+          <TouchableOpacity style={{backgroundColor: '#fff', borderRadius: 50, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5}}> 
+            <MuiIcons
+            name={'house'}
+            color={'#1570EF'}
+            size={24}
+            />
+
+            <Text 
+            style={{
+              fontSize: 16,
+              color: '#1570EF',
+              paddingLeft: 5
+            }}
+            >Nhà riêng</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{backgroundColor: '#fff', borderRadius: 50, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5}}> 
+            <MuiIcons
+            name={'business'}
+            color={'#1570EF'}
+            size={24}
+            />
+
+            <Text 
+            style={{
+              fontSize: 16,
+              color: '#1570EF',
+              paddingLeft: 5
+            }}
+            >Công ty</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{backgroundColor: '#fff', borderRadius: 50, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5}}> 
+            <MuiIcons
+            name={'school'}
+            color={'#1570EF'}
+            size={24}
+            />
+
+            <Text 
+            style={{
+              fontSize: 16,
+              color: '#1570EF',
+              paddingLeft: 5
+            }}
+            >Trường học</Text>
+          </TouchableOpacity>
+          
+      </View> 
+      
+      
+
+      <View style={{width: '100%'}}>
+        <View style={{backgroundColor: '#FFF', borderRadius: 10, width: '100%', marginTop: 15, paddingVertical: 10}}>
+          <TouchableOpacity style={{flexDirection: 'row', borderBottomWidth: 0.2, paddingHorizontal: 10, paddingBottom: 10, borderBottomColor: '#1570EF', alignItems: 'center'}}>
+            <MuiIcons
+            name={'my-location'}
+            color={'#1570EF'}
+            size={24}
+            />
+            <Text
+            style={{
+              color: '#1570EF',
+              fontSize: 20,
+              paddingLeft: 10
+            }}
+            >
+              Vị trí của bạn
+            </Text>
+          </TouchableOpacity>    
+
+          <TouchableOpacity style={{flexDirection: 'row', paddingHorizontal: 10, alignItems: 'center', paddingTop: 10, borderTopWidth: 0.2, borderTopColor: '#1570EF'}}>
+            <MuiIcons
+            name={'pin-drop'}
+            color={'#1570EF'}
+            size={24}
+            />
+            <Text
+            style={{
+              color: '#1570EF',
+              fontSize: 20,
+              paddingLeft: 10
+            }}
+            >
+              Chọn trên bản đồ
+            </Text>
+          </TouchableOpacity>  
+        </View>   
+
+        <View style={{backgroundColor: '#fff', borderRadius: 10, width: '100%', marginTop: 20}}>
+          <View style={{backgroundColor: '#1570EF', borderTopLeftRadius: 10, borderTopRightRadius: 10, paddingVertical: 10, paddingHorizontal: 10}}>
+            <Text
+            style={{
+              color: '#fff',
+              fontSize: 16,
+            }}
+            >Lịch sử</Text>            
+          </View>
+
+          <FlatList
+          data={[
+            {
+              content: 'Ký túc xá khu A - Đại học quốc gia thành phố Hồ Chí Minh'
+            },
+            {
+              content: 'Bách Khoa'
+            },
+            {
+              content: 'Trường Đại học Khoa học Tự Nhiên'
+            },
+
+            
+          ]}
+          renderItem={({item}) => {
+            return (
+              <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                padding: 10,
+                alignItems: 'center',
+                borderTopWidth: 0.2,
+                borderColor: '#1570EF',
+                borderBottomWidth: 0.2,
+              }}
+              >
+                <MuiIcons
+                name={'location-pin'}
+                color={'#1570EF'}
+                size={24}
+                />
+                
+                <Text
+                style={{
+                  color: '#1570EF',
+                  fontSize: 16,
+                  marginLeft: 10,
+                }}
+                >
+                  {`${item.content}`}
+                </Text>
+              </TouchableOpacity>
+            )
+          }}
+          />
+
+          <View style={{borderBottomLeftRadius: 10, borderBottomRightRadius: 10, justifyContent: 'flex-end', flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 10}}>
+              <Text
+              style={{
+                color: '#1570EF',
+                fontSize: 16,
+                
+              }}
+              >
+                Xem tất cả lịch sử
+              </Text>
+          </View>
+        </View>
+
+      </View>
+      
     </View>
   )
 }
@@ -13,7 +196,9 @@ export default RouteSearch;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '',
+        backgroundColor: '#CDE2FF',
         alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingTop: 15
     }
 })

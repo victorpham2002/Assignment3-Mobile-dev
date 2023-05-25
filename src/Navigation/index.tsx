@@ -37,7 +37,7 @@ const ApplicationNavigator = () => {
   return (
     <NavigationContainer>
       <StatusBar />
-      <RootStack.Navigator initialRouteName={RootScreens.ROUTE_SEARCH}
+      <RootStack.Navigator initialRouteName={RootScreens.ROUTE_DETAIL}
         screenOptions={{
           headerStyle: {
             backgroundColor: '#1570EF',
@@ -112,36 +112,16 @@ const ApplicationNavigator = () => {
             headerTitleAlign: 'center',
           }}
         />
-
         <RootStack.Screen
-          name={RootScreens.LOGIN}
-          component={Login}
-        />
-        <RootStack.Screen
-          name={RootScreens.HOME}
-          component={HomeContainer}
+          name={RootScreens.ROUTE_SEARCH}
+          component={RouteSearchContainer}
           options={{
             headerShown: false,
           }}
         />
         <RootStack.Screen
-          name={RootScreens.REGISTER}
-          component={Register}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <RootStack.Screen
-        name={RootScreens.ROUTE_SEARCH}
-        component={RouteSearchContainer}
-        options={{
-          headerShown: false
-        }}
-        />
-
-        <RootStack.Screen
-          name={RootScreens.ROUTE_SEARCH_RESULT}
-          component={RouteSearchResultContainer}
+          name={RootScreens.ROUTE_DETAIL}
+          component={RouteDetailContainer}
           options={{
             title: 'Tìm đường',
             headerStyle: {
@@ -155,21 +135,7 @@ const ApplicationNavigator = () => {
           }}
         />
 
-        <RootStack.Screen
-          name={RootScreens.ROUTE_DETAIL}
-          component={RouteDetailContainer}
-          options={{
-            headerShown: false
-          }}
-        />
 
-        <RootStack.Screen
-        name={RootScreens.ROUTE_SEARCH}
-        component={RouteSearchContainer}
-        options={{
-          headerShown: false
-        }}
-        />
       </RootStack.Navigator>
     </NavigationContainer>
   );
