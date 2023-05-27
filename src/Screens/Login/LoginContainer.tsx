@@ -9,7 +9,7 @@ type LoginScreenNavigatorProps = NativeStackScreenProps<
 
 const LoginContainer = ({ navigation }: LoginScreenNavigatorProps) => {
   const onNavigate = (screen: RootScreens) => {
-    navigation.navigate(screen);
+    navigation.navigate(screen as any);
   };
   return <Login isLoading={false} onNavigate={onNavigate} />;
 };

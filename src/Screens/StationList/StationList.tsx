@@ -67,35 +67,14 @@ function renderHeader() {
     const [stationName, onChangeStationName] = useState("");
   
     const [data, setData] = useState<Route[]>([]);
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    
-    const [query, setQuery] = useState('');
-    const [fullData, setFullData] = useState([]);
-
-    const handleSearch = (text: string) => {
-      const formattedQuery = text.toLowerCase();
-      /*const filteredData = filter(fullData, user => {
-        return contains(user, formattedQuery);
-      });*/
-      /*const filteredData = filter(fullData, ['RouteNo', formattedQuery]);*/
-      const filteredData = filter(fullData, route => contains(route, formattedQuery));
-
-      setData(filteredData);
-      setQuery(text);
-    };
-
-    const contains = ( route: any , query : string) => {
-      const RouteNo = route['RouteNo'].toLowerCase();
-      const RouteName = route['RouteName'].toLowerCase();
-
-      if (RouteNo.includes(query)) {
-        return true;
-      }
-      if (RouteName.includes(query)) {
-        return true;
-      }
-      return false;
+    const getAllRoute = async () => {
+      try {
+        const response = await fetch('http://192.168.1.5:3000/routes');
+        const json = await response.json();
+        setData(json);
+      } catch (error) {
+        console.error(error);
+      } 
     };
 
     useEffect(() => {

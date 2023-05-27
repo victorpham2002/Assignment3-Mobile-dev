@@ -10,6 +10,10 @@ import {Login} from "@/Screens/Login";
 import { Register } from "@/Screens/Register";
 import { StationListContainer } from "@/Screens/StationList";
 import { StationDetailContainer } from "@/Screens/StationDetail";
+import RouteSearchResultContainer from "@/Screens/RouteSearchResult/RouteSearchResultContainer";
+import RouteDetailContainer from "@/Screens/RouteDetail/RouteDetailContainer";
+import RouteSearchContainer from "@/Screens/RouteSearch/RouteSearchContainer";
+import { Onboarding }from "@/Screens/Onboarding"
 
 export type RootStackParamList = {
   [RootScreens.WELCOME]: undefined;
@@ -18,6 +22,10 @@ export type RootStackParamList = {
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
   [RootScreens.STATIONDETAIL]: {id: number} ;
+  [RootScreens.ONBOARDING]: undefined;
+  [RootScreens.ROUTE_SEARCH_RESULT]: undefined;
+  [RootScreens.ROUTE_SEARCH]: undefined;
+  [RootScreens.ROUTE_DETAIL]: undefined;
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -29,6 +37,7 @@ const ApplicationNavigator = () => {
       <StatusBar />
       <RootStack.Navigator 
         initialRouteName={RootScreens.STATIONLIST}
+      <RootStack.Navigator initialRouteName={RootScreens.ROUTE_DETAIL}
         screenOptions={{
           headerStyle: {
             backgroundColor: '#1570EF',
@@ -40,6 +49,10 @@ const ApplicationNavigator = () => {
           headerTitleAlign: 'center',
         }}
       >
+        <RootStack.Screen
+          name={RootScreens.ONBOARDING}
+          component={Onboarding}
+        />
         <RootStack.Screen
           name={RootScreens.STATIONLIST}
           component={StationListContainer}
@@ -83,6 +96,46 @@ const ApplicationNavigator = () => {
             headerShown: false,
           }}
         />
+
+        <RootStack.Screen
+          name={RootScreens.ROUTE_SEARCH_RESULT}
+          component={RouteSearchResultContainer}
+          options={{
+            title: 'Tìm đường',
+            headerStyle: {
+              backgroundColor: '#1570EF',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
+        <RootStack.Screen
+          name={RootScreens.ROUTE_SEARCH}
+          component={RouteSearchContainer}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <RootStack.Screen
+          name={RootScreens.ROUTE_DETAIL}
+          component={RouteDetailContainer}
+          options={{
+            title: 'Tìm đường',
+            headerStyle: {
+              backgroundColor: '#1570EF',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
+
+
       </RootStack.Navigator>
     </NavigationContainer>
   );
