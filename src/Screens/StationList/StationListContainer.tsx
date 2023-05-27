@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StationList } from "./StationList";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { RootStackParamList } from "@/Navigation";
 import { RootScreens } from "..";
 
@@ -10,9 +10,8 @@ type LoginScreenNavigatorProps = NativeStackScreenProps<
 >;
 
 export const StationListContainer = ({ navigation }: LoginScreenNavigatorProps) => {
-  const onNavigate = (screen: RootScreens.STATIONDETAIL, id: string) => {
+  const onNavigate = (screen: RootScreens.STATIONDETAIL, id: number) => {
     navigation.navigate(screen, {id: id});
-    /*navigation.navigate(screen);*/
   };
 
   return <StationList isLoading={false} onNavigate={onNavigate} />;
