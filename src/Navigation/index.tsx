@@ -17,7 +17,7 @@ export type RootStackParamList = {
   [RootScreens.LOGIN]: undefined;
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
-  [RootScreens.STATIONDETAIL]: {id: string} | undefined;
+  [RootScreens.STATIONDETAIL]: {id: number} ;
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -27,7 +27,8 @@ const ApplicationNavigator = () => {
   return (
     <NavigationContainer>
       <StatusBar />
-      <RootStack.Navigator
+      <RootStack.Navigator 
+        initialRouteName={RootScreens.STATIONLIST}
         screenOptions={{
           headerStyle: {
             backgroundColor: '#1570EF',
@@ -49,7 +50,7 @@ const ApplicationNavigator = () => {
         <RootStack.Screen
           name={RootScreens.STATIONDETAIL}
           component={StationDetailContainer}
-          initialParams={{route: '33'} as any}
+          initialParams={{id: 54}}
           options={{
             title: 'Tuyến số',
           }}

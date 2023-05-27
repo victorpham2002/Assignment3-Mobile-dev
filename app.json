@@ -35,6 +35,11 @@
     "plugins": [],
     "runtimeVersion": {
       "policy": "sdkVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a4097aa6-81d4-40da-800b-f581ec3b13f3"
+      }
     }
   }
 }

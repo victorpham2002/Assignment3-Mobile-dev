@@ -1,4 +1,3 @@
-import { i18n, LocalizationKey } from "@/Localization";
 import React, { useEffect , useState } from "react";
 import {
   View,
@@ -12,19 +11,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { HStack, Spinner, Heading } from "native-base";
-import { User } from "@/Services";
-import Header from "@/Components/Header/Header";
 import { Colors } from "@/Theme/Variables";
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
-import MapView from 'react-native-maps';
 import { RootScreens } from "..";
 import filter from 'lodash.filter';
 
 export interface ILoginProps {
   isLoading: boolean;
-  onNavigate: (string: RootScreens.STATIONDETAIL, route: string) => void;
+  onNavigate: (string: RootScreens.STATIONDETAIL, route: number) => void;
 }
 const API_ENDPOINT = "https://assignment3-mobiledev-nhom1-busappapi.onrender.com/";
 
@@ -109,11 +104,8 @@ function renderHeader() {
       fetch(`${API_ENDPOINT}routes`)
         .then(response => response.json())
         .then(results => {
-          const sortedResult = results.sort((a: { RouteNo: string; }, b: { RouteNo: string; }) =>
-            a.RouteNo > b.RouteNo ? 1 : -1,
-          );
-          setData(sortedResult);
-          setFullData(sortedResult);
+          setData(results);
+          setFullData(results);
           setIsLoading(false);
         })
         .catch(err => {
@@ -178,7 +170,7 @@ function renderHeader() {
             renderItem={({item}) => (
               <TouchableOpacity 
                 onPress={() => {
-                  onNavigate(RootScreens.STATIONDETAIL, item.RouteNo);
+                  onNavigate(RootScreens.STATIONDETAIL, item.RouteId);
                 }}
                 style={styles.item}>
                 
