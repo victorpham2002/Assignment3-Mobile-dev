@@ -3,13 +3,19 @@ import React from 'react'
 import { FlatList } from 'native-base'
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { background } from 'native-base/lib/typescript/theme/styled-system';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const RouteDetail = () => {
+const RouteDetail = (props: any) => {
+  const {
+    routing,
+  } = props;
   return (
-    <View style={{width: '100%', flexDirection: 'row', justifyContent: 'center', marginTop: 25, marginHorizontal: 60}}>
+    <SafeAreaView style={{width: '80%', flexDirection: 'column', justifyContent: 'center', marginTop: 25, marginHorizontal: 60, backgroundColor: '#fff'}}>
       <FlatList
-      data={[1,1,1]}
-      renderItem={({item}) => {
+      data={routing}
+      renderItem={(item: any) => {
+        const step = item.item;
+
         return (
           <View style={{paddingHorizontal: 10}}>
             <View 
@@ -17,6 +23,7 @@ const RouteDetail = () => {
               paddingLeft: 20,
               borderLeftWidth: 1,
               borderColor: '#0056CF',
+              paddingBottom: 20
             }}
             >
             
@@ -29,32 +36,32 @@ const RouteDetail = () => {
                 top: 0,
                 left: -13,
                 zIndex: 2,
-                elevation: 2,
-                backgroundColor: '#fff'
+                backgroundColor: '#fff',
+                padding: 0
               }}
               />
       
               
+              <View style={{flexGrow: 1, flexDirection: 'row'}}>
+                <Text
+                style={{
+                  color: '#0056CF',
+                  fontSize: 16,
+                  flex: 1, 
+                  width: 1
+                }}
+                >
+                  {step.html_instructions}
+                </Text>
+              </View>
               
-              <Text
-              style={{
-                color: '#0056CF',
-                fontSize: 16,
-                lineHeight: 25
-              }}
-              >
-                Đi đến trạm: {'\n'}
-                Bến xe An sương {'\n'}
-                Đi đến trạm: {'\n'}
-                Bến xe An sương {'\n'}
-              </Text>
             </View>
           </View>
           
         ) 
       }}
       />
-    </View>
+    </SafeAreaView>
   )
 }
 
