@@ -26,7 +26,7 @@ export type RootStackParamList = {
   [RootScreens.LOGIN]: undefined;
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
-  [RootScreens.STATIONDETAIL]: { id: string } | undefined;
+  [RootScreens.STATIONDETAIL]: { id: number } | undefined;
   [RootScreens.ONBOARDING]: undefined;
   [RootScreens.ROUTE_SEARCH_RESULT]: undefined;
   [RootScreens.ROUTE_SEARCH]: undefined;
@@ -55,15 +55,16 @@ const publicScreen = [
 const privateScreen = [
   { name: RootScreens.HOME, component: HomeContainer, options: { headerShown: false}},
   { name: RootScreens.STATIONLIST, component: StationListContainer, options: { title: "Danh sách tuyến xe", ...defautScreenOptions }},
-  // { name: RootScreens.STATIONDETAIL, component: StationDetailContainer, options: { title: "Tuyến số"}},
+  { name: RootScreens.STATIONDETAIL, component: StationDetailContainer, options: { title: "Tuyến số"}},
   { name: RootScreens.ROUTE_DETAIL, component: RouteDetailContainer, options: { headerShown: false}},
-  // { name: RootScreens.ROUTE_SEARCH, component: RouteSearchContainer, options: { headerShown: false}},
-  // { 
-  //   name: RootScreens.ROUTE_SEARCH_RESULT, 
-  //   component: RouteSearchResultContainer,
-  //   options: { title: "Tìm đường", ...defautScreenOptions},
-  // },
+  { name: RootScreens.ROUTE_SEARCH, component: RouteSearchContainer, options: { headerShown: false}},
+  { 
+    name: RootScreens.ROUTE_SEARCH_RESULT, 
+    component: RouteSearchResultContainer,
+    options: { title: "Tìm đường", ...defautScreenOptions},
+  },
 ]
+
 // @refresh reset
 const ApplicationNavigator = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false)

@@ -12,12 +12,6 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Colors } from "@/Theme/Variables";
-import MuiIcons from "@expo/vector-icons/MaterialIcons";
-import { TextInput } from "react-native";
-import MapView from 'react-native-maps';
-import { RootScreens } from "..";
-import { Config } from "@/Config";
-import { Item } from "react-native-paper/lib/typescript/src/components/Drawer/Drawer";
 import MapView, { LatLng, Marker, Polyline } from 'react-native-maps';
 
 export interface ILoginProps {
@@ -455,25 +449,7 @@ type RouteCoordinate = {
     }
 
     const [data, setData] = useState<RouteDetail>();
-// <<<<<<< vuong
-//     const URL = API_ENDPOINT + route;
-//     const getRoute = async () => {
-//       try {
-//         const response = await fetch(`${Config.BACKEND_URL}/routes/${route}`);
-//         const json = await response.json();
-//         if (json.Tickets === "") {
-//           json.Tickets = []
-//         }
-
-//         setData(json);
-//         setOptions(route);
-//       } catch (error) {
-//         console.error(error);
-//       } 
-//     };
-// =======
-//     const URL = API_ENDPOINT + id.toString();
-// >>>>>>> master
+    const URL = API_ENDPOINT + id.toString();
 
     const [startStopsData, setStartStopsData] = useState<RouteStop[]>([]);
     const startStopsURL = URL + '/stops/start';
