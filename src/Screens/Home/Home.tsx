@@ -74,7 +74,7 @@ export const Home = (props: IHomeProps) => {
               <TextInput
                 placeholderTextColor="#C6C6C6"
                 placeholder="Tìm kiếm địa điểm"
-                onPressIn={() => navigation.navigate(RootScreens.ROUTE_SEARCH as never)}
+                onPressIn={() => navigation.navigate(...[RootScreens.ROUTE_SEARCH_RESULT] as never)}
                 style={{
                   ...styles.inputText,
                   ...Platform.select({
