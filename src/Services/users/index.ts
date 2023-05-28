@@ -30,6 +30,23 @@ const userApi = API.injectEndpoints({
 
 });
 
+
+const updateUser = API.injectEndpoints({
+  endpoints: (build) => ({
+    updateUser: build.mutation<any, Partial<any>>({
+      query: (params) => ({
+        url: `users/${params.id}`,
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+        },
+        body: params.info
+      })
+    }),
+  }),
+  overrideExisting: true,
+});
+
 const loginDB = API.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation<any, Partial<any>>({
@@ -59,3 +76,4 @@ const register = API.injectEndpoints({
 export const { useGetUserMutation } = userApi;
 export const { useLoginMutation } = loginDB;
 export const {useRegisterMutation} = register
+export const {useUpdateUserMutation} = updateUser
