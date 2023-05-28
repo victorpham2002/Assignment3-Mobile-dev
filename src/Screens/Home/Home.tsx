@@ -104,7 +104,7 @@ export const Home = (props: IHomeProps) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => navigation.navigate(RootScreens.ROUTE_SEARCH as never)}
+                onPress={() => navigation.navigate(RootScreens.ROUTE_SEARCH_RESULT as never)}
                 style={{
                   ...styles.option,
                   ...Platform.select({
