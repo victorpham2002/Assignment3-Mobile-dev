@@ -18,6 +18,9 @@ import MapView from 'react-native-maps';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch } from "@/Hooks/redux";
 import { logout } from "@/Store/reducers/user";
+import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { RootScreens } from "..";
 
 export interface IHomeProps {
   data: any | undefined;
@@ -31,6 +34,7 @@ export const Home = (props: IHomeProps) => {
     await AsyncStorage.removeItem('user')
     dispatch(logout())
   }
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -70,6 +74,7 @@ export const Home = (props: IHomeProps) => {
               <TextInput
                 placeholderTextColor="#C6C6C6"
                 placeholder="Tìm kiếm địa điểm"
+                onPressIn={() => navigation.navigate(...[RootScreens.ROUTE_SEARCH_RESULT] as never)}
                 style={{
                   ...styles.inputText,
                   ...Platform.select({
