@@ -31,6 +31,7 @@ export interface IHomeProps {
 export const Home = (props: IHomeProps) => {
   const { data, isLoading } = props;
   const dispatch = useAppDispatch()
+  const navigation = useNavigation()
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    zIndex: 2
+    zIndex: 2,
   },
   option: {
     backgroundColor: "#fff",
