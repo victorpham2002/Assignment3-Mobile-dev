@@ -10,37 +10,46 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { HStack, Spinner, Heading } from "native-base";
-import { User } from "@/Services";
 import Header from "@/Components/Header/Header";
 import { Colors } from "@/Theme/Variables";
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch } from "@/Hooks/redux";
+import { logout } from "@/Store/reducers/user";
 
 export interface IHomeProps {
-  data: User | undefined;
+  data: any | undefined;
   isLoading: boolean;
 }
 
 export const Home = (props: IHomeProps) => {
   const { data, isLoading } = props;
+  const dispatch = useAppDispatch()
+  const handleLogout =  async () => {
+    await AsyncStorage.removeItem('user')
+    dispatch(logout())
+  }
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       {isLoading ? (
-        <HStack space={2} justifyContent="center">
-          <Spinner accessibilityLabel="Loading posts" />
-          <Heading color="primary.500" fontSize="md">
-            {i18n.t(LocalizationKey.LOADING)}
-          </Heading>
-        </HStack>
+        <View style={{display: 'flex', alignContent:'center', justifyContent: 'center', flex: 1}}>
+          <HStack space={2} justifyContent="center">
+            <Spinner accessibilityLabel="Loading posts" />
+            <Heading color="primary.500" fontSize="md">
+              {i18n.t(LocalizationKey.LOADING)}
+            </Heading>
+          </HStack>
+        </View>
       ) : (
         <React.Fragment>
           <Header
             title={i18n.t(LocalizationKey.HOME)}
             LeftIcon={<MuiIcons name="menu" size={28} color={Colors.WHITE} />}
             RightIcon={
-              <MuiIcons name="person" size={28} color={Colors.WHITE} />
+              <MuiIcons name="person" size={28} color={Colors.WHITE} onPress={handleLogout} />
             }
           />
 

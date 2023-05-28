@@ -1,3 +1,4 @@
+import * as WebBrowser from 'expo-web-browser';
 import React from "react";
 import * as Localization from "expo-localization";
 import { i18n, Language } from "@/Localization";
@@ -10,6 +11,9 @@ import { ApplicationNavigator } from "./Navigation";
 i18n.locale = Localization.locale;
 i18n.enableFallback = true;
 i18n.defaultLocale = Language.ENGLISH;
+
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   return (
