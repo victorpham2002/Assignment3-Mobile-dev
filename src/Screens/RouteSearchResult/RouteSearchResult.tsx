@@ -155,11 +155,19 @@ const RouteSearchResult = (props: any) => {
             style={styles.item}
             onPress={() => navigation.navigate(...[RootScreens.ROUTE_DETAIL, {routing: item.legs[0].steps}] as never)}
             >
-              <Text style={styles.itemTitle}>{`Bus `}{
-                (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT").transit_details.line.short_name
+              <Text style={styles.itemTitle}>{
+                (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT") 
+                ? 
+                `Bus ${(item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT").transit_details.line.short_name}`
+                :
+                `Đi bộ`
               }</Text>
               <Text style={styles.itemDescription}>{
+                (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT") ? 
+                
                 (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT").transit_details.line.name
+                : 
+                ""
               }</Text>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginRight: 20}}>
@@ -170,8 +178,9 @@ const RouteSearchResult = (props: any) => {
                     size={24}
                     />
                     <Text style={{color: '#0056CF', fontSize: 16, marginLeft: 5}}>
-                      {
+                      { 
                         Math.round((item.legs as any[]).reduce((total, leg) => {
+                          console.log('in walk')
                           return total + (leg.steps as any[]).reduce((total, step) => {
                             if(step.travel_mode == "WALKING"){
                               return total + step.distance.value;
@@ -228,7 +237,13 @@ const RouteSearchResult = (props: any) => {
                     size={24}
                     />
                     <Text style={{color: '#0056CF', fontSize: 16, marginLeft: 5}}>
-                      {`${item.fare.value} VND`}
+                      {
+                        item.fare ?
+                        `${item.fare.value} VND`
+                        :
+                        `0 VND`
+                      
+                      }
                     </Text>
                   </View>
                 </View>
