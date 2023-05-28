@@ -16,7 +16,7 @@
     "splash": {
       "image": "./assets/login_img.png",
       "resizeMode": "contain",
-      "backgroundColor": "CDE2FF"
+      "backgroundColor": "#CDE2FF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
