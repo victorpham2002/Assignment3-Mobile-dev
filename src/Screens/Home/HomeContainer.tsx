@@ -9,7 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getFacebookUser, getGoogleUser, getUserDB } from "@/Store/reducers/user";
 import { useAppDispatch, useAppSelector } from "@/Hooks/redux";
 import { getUserInAsyncStorage } from "@/Helper";
-import { useGetUserMutation } from "@/Services";
+
 
 type IHomeContainerProps = NativeStackScreenProps<RootStackParamList>
 
@@ -17,25 +17,33 @@ export const HomeContainer = ({navigation} :IHomeContainerProps) => {
   // const [userId, setUserId] = useState("9");
   const dispatch = useAppDispatch()
   const {user} = useAppSelector((state: RootState) => ({...state}))
+  const onNavigate = (screen: RootScreens) => {
+    navigation.navigate(screen);
+  };
 
   useEffect(() => {
-    getUserInAsyncStorage().then((user:any)=> {
-      if (user) {
-        if (user.type === "google") {
-          console.log(user)
-          dispatch(getGoogleUser(user.access_token))
-        } else if (user.type === "facebook") {
-          dispatch(getFacebookUser(user.access_token))
+    if (!user.username && !user.name && !user.email) {
+      getUserInAsyncStorage().then((user: any) => {
+        if (user) {
+          if (user.type === "google") {
+            console.log(user);
+            dispatch(getGoogleUser(user.access_token));
+          } else if (user.type === "facebook") {
+            dispatch(getFacebookUser(user.access_token));
+          } else {
+            console.log(user);
+            dispatch(
+              getUserDB({ token: user.access_token, username: user.username })
+            );
+          }
         } else {
-          console.log(user)
-          dispatch(getUserDB({token: user.access_token, username: user.username}))
+          navigation.navigate(RootScreens.LOGIN);
         }
-      } else  {
-        navigation.navigate(RootScreens.LOGIN)
-      }
-    })
-    
-  }, [])
+      });
+
+    }
+  }, []);
+
 
   
 
@@ -48,5 +56,5 @@ export const HomeContainer = ({navigation} :IHomeContainerProps) => {
 
 
 
-  return <Home data={user} isLoading={false} />;
+  return <Home data={user} isLoading={user.loading} onNavigate={onNavigate}/>;
 };

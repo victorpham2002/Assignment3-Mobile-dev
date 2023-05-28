@@ -15,14 +15,15 @@ import RouteSearchResultContainer from "@/Screens/RouteSearchResult/RouteSearchR
 import RouteDetailContainer from "@/Screens/RouteDetail/RouteDetailContainer";
 import RouteSearchContainer from "@/Screens/RouteSearch/RouteSearchContainer";
 import { Onboarding } from "@/Screens/Onboarding";
-import { NativeStackNavigationConfig, NativeStackScreenProps } from "@react-navigation/native-stack/lib/typescript/src/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack/lib/typescript/src/types";
 import { useAppDispatch, useAppSelector } from "@/Hooks/redux";
 import { getUserInAsyncStorage } from "@/Helper";
+import { ProfileContainer } from "@/Screens/Profile";
 
 export type RootStackParamList = {
   [RootScreens.WELCOME]: undefined;
   [RootScreens.HOME]: undefined;
+  [RootScreens.PROFILE]: undefined;
   [RootScreens.LOGIN]: undefined;
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
@@ -54,9 +55,11 @@ const publicScreen = [
 
 const privateScreen = [
   { name: RootScreens.HOME, component: HomeContainer, options: { headerShown: false}},
-  { name: RootScreens.STATIONLIST, component: StationListContainer, options: { title: "Danh sách tuyến xe", ...defautScreenOptions }},
+  { name: RootScreens.PROFILE, component: ProfileContainer,  options: { title: "Tài khoản", ...defautScreenOptions }},
+  // { name: RootScreens.STATIONLIST, component: StationListContainer, options: { title: "Danh sách tuyến xe", ...defautScreenOptions }},
   // { name: RootScreens.STATIONDETAIL, component: StationDetailContainer, options: { title: "Tuyến số"}},
   { name: RootScreens.ROUTE_DETAIL, component: RouteDetailContainer, options: { headerShown: false}},
+  
   // { name: RootScreens.ROUTE_SEARCH, component: RouteSearchContainer, options: { headerShown: false}},
   // { 
   //   name: RootScreens.ROUTE_SEARCH_RESULT, 

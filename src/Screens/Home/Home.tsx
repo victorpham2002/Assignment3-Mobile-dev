@@ -18,19 +18,17 @@ import MapView from 'react-native-maps';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch } from "@/Hooks/redux";
 import { logout } from "@/Store/reducers/user";
+import { RootScreens } from "..";
 
 export interface IHomeProps {
   data: any | undefined;
   isLoading: boolean;
+  onNavigate: any
 }
 
 export const Home = (props: IHomeProps) => {
   const { data, isLoading } = props;
   const dispatch = useAppDispatch()
-  const handleLogout =  async () => {
-    await AsyncStorage.removeItem('user')
-    dispatch(logout())
-  }
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -49,7 +47,7 @@ export const Home = (props: IHomeProps) => {
             title={i18n.t(LocalizationKey.HOME)}
             LeftIcon={<MuiIcons name="menu" size={28} color={Colors.WHITE} />}
             RightIcon={
-              <MuiIcons name="person" size={28} color={Colors.WHITE} onPress={handleLogout} />
+              <MuiIcons name="person" size={28} color={Colors.WHITE} onPress={() => props.onNavigate(RootScreens.PROFILE)} />
             }
           />
 
