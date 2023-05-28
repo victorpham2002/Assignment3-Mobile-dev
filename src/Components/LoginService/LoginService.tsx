@@ -1,21 +1,28 @@
 import { Colors } from "@/Theme/Variables";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import { Image, Text } from "react-native";
 
-function LoginService() {
+export interface ILoginServiceProps {
+  onLoginWithSocial: (type: string) => void
+}
+function LoginService(props: ILoginServiceProps) {
+  const {onLoginWithSocial} = props
   return (
     <View style={styles.container}>
-        
-        <View style = {{...styles.row, marginVertical: 8}}>
-            <Text style = {styles.border}></Text>
-            <Text style={{marginHorizontal: 16}}>Hoặc</Text>
-            <Text style = {styles.border}></Text>
-        </View>
-        <View style={styles.row}>
-            <Image source={require("../../../assets/facebookIcon.png")} />
-            <Image source={require("../../../assets/googleIcon.png")} />
-        </View>
+      <View style={{ ...styles.row, marginVertical: 8 }}>
+        <Text style={styles.border}></Text>
+        <Text style={{ marginHorizontal: 16 }}>Hoặc</Text>
+        <Text style={styles.border}></Text>
+      </View>
+      <View style={styles.row}>
+        <TouchableOpacity onPress={() => onLoginWithSocial("facebook")}>
+          <Image source={require("../../../assets/facebookIcon.png")} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onLoginWithSocial("google")}>
+          <Image source={require("../../../assets/googleIcon.png")} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -34,12 +41,12 @@ const styles = StyleSheet.create({
   },
 
   border: {
-    width: '30%',
+    width: "30%",
     borderBottomWidth: 2,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderColor: Colors.PRIMARY,
-    transform: [{translateY: -10}]
-  }
+    transform: [{ translateY: -10 }],
+  },
 });
 
 export default LoginService;

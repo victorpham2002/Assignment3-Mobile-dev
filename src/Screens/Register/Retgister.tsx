@@ -1,24 +1,57 @@
-import { useState } from "react";
 import { RootScreens } from "..";
-
 import { MyButton } from "@/Components/CustomButton";
 import { FloatingInput } from "@/Components/FloatingInput";
 import { LoginService } from "@/Components/LoginService";
 import { LocalizationKey, i18n } from "@/Localization";
 import { Colors, FontSize } from "@/Theme/Variables";
-import { View, Text, Image, StyleSheet, Button, Alert } from "react-native";
-import { FormControl } from "native-base";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Button,
+  Alert,
+  Modal,
+  Pressable,
+  Platform,
+} from "react-native";
+import { FormControl, HStack, Heading, Spinner } from "native-base";
+import CustomAlert from "@/Components/CusomAlert/CustomAlert";
+import { storeAsyncStorage } from "@/Helper";
 
 export interface IRegisterProps {
   isLoading: boolean;
+  error: string;
+  setError: any;
+  password: string;
+  setPassword: any;
+  userName: string;
+  confirmPassword: string;
+  setConfirmPassword: any;
+  setUserName: any;
+  isRegisterSuccess: boolean;
   onNavigate: (string: RootScreens) => void;
+  onLoginButtonPress: (username: string, password: string) => void;
 }
 
+export interface ILoginProps {}
+
 export const Register = (props: IRegisterProps) => {
-  const { isLoading } = props;
-  const [userName, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const {
+    isLoading,
+    error,
+    setError,
+    onNavigate,
+    onLoginButtonPress,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    userName,
+    setUserName,
+    isRegisterSuccess,
+  } = props;
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -29,11 +62,11 @@ export const Register = (props: IRegisterProps) => {
         <Text style={styles.title}>{i18n.t(LocalizationKey.SIGNUP)}</Text>
       </View>
       <View style={styles.content}>
-       <FormControl>
+        <FormControl>
           <FloatingInput
             label={i18n.t(LocalizationKey.USERNAME)}
             value={userName}
-            onChangeText={setUsername}
+            onChangeText={setUserName}
           />
           <FloatingInput
             label={i18n.t(LocalizationKey.PASSWORD)}
@@ -41,23 +74,33 @@ export const Register = (props: IRegisterProps) => {
             type="password"
             onChangeText={setPassword}
           />
-  
+
           <FloatingInput
             label={i18n.t(LocalizationKey.CONFIRM_PASSWORD)}
             value={confirmPassword}
             type="password"
             onChangeText={setConfirmPassword}
           />
-  
+
           <MyButton
-            title={i18n.t(LocalizationKey.SIGNUP)}
+            disabled={isLoading || !userName || !password}
+            title={
+              isLoading ? (
+                <HStack space={2} justifyContent="center">
+                  <Spinner accessibilityLabel="Loading" color={"#fff"} />
+                  <Heading color="#fff" fontSize="md">
+                    {i18n.t(LocalizationKey.SIGNUP)}
+                  </Heading>
+                </HStack>
+              ) : (
+                i18n.t(LocalizationKey.SIGNUP)
+              )
+            }
             buttonColor={Colors.PRIMARY}
             buttonStyle={styles.button}
-            onPress={() => {
-              Alert.alert(userName, password);
-            }}
+            onPress={onLoginButtonPress}
           />
-       </FormControl>
+        </FormControl>
         <View
           style={{
             width: "100%",
@@ -66,10 +109,34 @@ export const Register = (props: IRegisterProps) => {
           }}
         >
           <LoginService />
-          <Text style={styles.bottomText}>{i18n.t(LocalizationKey.HAS_AN_ACCOUNT)} ?</Text>
-          <Text style={styles.bottomText} onPress={() => props.onNavigate(RootScreens.LOGIN)}>{i18n.translate(LocalizationKey.SIGNIN)}</Text>
+          <Text style={styles.bottomText}>
+            {i18n.t(LocalizationKey.HAS_AN_ACCOUNT)} ?
+          </Text>
+          <Text
+            style={styles.bottomText}
+            onPress={() => props.onNavigate(RootScreens.REGISTER)}
+          >
+            {i18n.translate(LocalizationKey.SIGNUP)}
+          </Text>
         </View>
       </View>
+
+      <CustomAlert
+        displayMode="warning"
+        displayMsg={error}
+        visibility={!!error}
+        handleDismiss={() => setError("")}
+      />
+      <CustomAlert
+        displayMode="success"
+        displayMsg={i18n.translate(LocalizationKey.SUCCESS_REGISTER)}
+        visibility={!!isRegisterSuccess}
+        handleDismiss={async () => {
+          await storeAsyncStorage("username", userName);
+          onNavigate(RootScreens.LOGIN);
+        }}
+        buttonTitle="Đăng nhập thôi!"
+      />
     </View>
   );
 };
@@ -106,9 +173,9 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    minHeight: '50%',
+    display: "flex",
+    justifyContent: "space-between",
+    minHeight: "50%",
     width: "100%",
     alignItems: "center",
     backgroundColor: "#fff",

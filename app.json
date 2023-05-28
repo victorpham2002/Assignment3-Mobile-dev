@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "Expo Redux Template",
-    "slug": "expo-redux-template",
+    "name": "Bus Smart",
+    "slug": "bus-smart",
     "version": "1.1.0",
+    "scheme": ["fb587952573481521"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,20 +20,31 @@
       "**/*"
     ],
     "ios": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAknGYC00IEkIiPYYC7w-1hxFvX02cJe1U"
+        }
+      },
       "supportsTablet": true,
-      "bundleIdentifier": "com.hpcc.expo-redux-template"
+      "bundleIdentifier": "com.hpcc.bussmart"
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAknGYC00IEkIiPYYC7w-1hxFvX02cJe1U"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.hpcc.expo_redux_template"
+      "package": "com.hpcc.bussmart"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+    ],
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
@@ -43,3 +55,4 @@
     }
   }
 }
+
