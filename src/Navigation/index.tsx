@@ -57,7 +57,7 @@ const privateScreen = [
   { name: RootScreens.HOME, component: HomeContainer, options: { headerShown: false}},
   { name: RootScreens.PROFILE, component: ProfileContainer,  options: { title: "Tài khoản", ...defautScreenOptions }},
   { name: RootScreens.STATIONLIST, component: StationListContainer, options: { title: "Danh sách tuyến xe", ...defautScreenOptions }},
-  { name: RootScreens.STATIONDETAIL, component: StationDetailContainer, options: { title: "Tuyến số"}},
+  { name: RootScreens.STATIONDETAIL, component: StationDetailContainer, options: { title: "Tuyến số", ...defautScreenOptions}},
   { name: RootScreens.ROUTE_DETAIL, component: RouteDetailContainer, options: { title: "Tìm đường", ...defautScreenOptions}},
   { name: RootScreens.ROUTE_SEARCH, component: RouteSearchContainer, options: { headerShown: false}},
   { 

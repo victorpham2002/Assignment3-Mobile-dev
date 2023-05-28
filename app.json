@@ -9,7 +9,7 @@
       "fb587952573481521"
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/login_img.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/login_img.png",
@@ -52,8 +52,9 @@
       "policy": "sdkVersion"
     },
     "extra": {
-      
+      "eas": {
+        "projectId": "35632d70-d4c7-4659-98c6-92b38d506353"
+      }
     }
-
   }
 }
