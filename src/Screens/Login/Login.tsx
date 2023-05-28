@@ -3,20 +3,43 @@ import { FloatingInput } from "@/Components/FloatingInput";
 import { LoginService } from "@/Components/LoginService";
 import { LocalizationKey, i18n } from "@/Localization";
 import { Colors, FontSize } from "@/Theme/Variables";
-import { useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Modal,
+  Pressable,
+  Platform,
+} from "react-native";
 import { RootScreens } from "..";
-import { FormControl } from "native-base";
+import { FormControl, HStack, Heading, Spinner } from "native-base";
 
 export interface ILoginProps {
   isLoading: boolean;
+  error: string;
+  setError: any;
+  password: string;
+  setPassword: any;
+  userName: string;
+  setUserName: any;
   onNavigate: (string: RootScreens) => void;
+  onLoginButtonPress: (username: string, password: string) => void;
 }
 
 export const Login = (props: ILoginProps) => {
-  const { isLoading, onNavigate } = props;
-  const [userName, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    isLoading,
+    error,
+    setError,
+    onNavigate,
+    onLoginButtonPress,
+    password,
+    setPassword,
+    userName,
+    setUserName,
+  } = props;
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -27,11 +50,11 @@ export const Login = (props: ILoginProps) => {
         <Text style={styles.title}>{i18n.t(LocalizationKey.SIGNIN)}</Text>
       </View>
       <View style={styles.content}>
-       <FormControl>
+        <FormControl>
           <FloatingInput
             label={i18n.t(LocalizationKey.USERNAME)}
             value={userName}
-            onChangeText={setUsername}
+            onChangeText={setUserName}
           />
           <FloatingInput
             label={i18n.t(LocalizationKey.PASSWORD)}
@@ -39,29 +62,73 @@ export const Login = (props: ILoginProps) => {
             type="password"
             onChangeText={setPassword}
           />
-  
+
           <MyButton
-            title={i18n.t(LocalizationKey.SIGNIN)}
+            disabled={isLoading || !userName || !password}
+            title={
+              isLoading ? (
+                <HStack space={2} justifyContent="center">
+                  <Spinner accessibilityLabel="Loading" color={"#fff"} />
+                  <Heading color="#fff" fontSize="md">
+                    {i18n.t(LocalizationKey.SIGNIN)}
+                  </Heading>
+                </HStack>
+              ) : (
+                i18n.t(LocalizationKey.SIGNIN)
+              )
+            }
             buttonColor={Colors.PRIMARY}
             buttonStyle={styles.button}
-            onPress={() => {
-             onNavigate(RootScreens.HOME)
-            }}
+            onPress={onLoginButtonPress}
           />
-       </FormControl>
+        </FormControl>
         <View
           style={{
             width: "100%",
             backgroundColor: "#fff",
             paddingVertical: 16,
-            
           }}
         >
           <LoginService />
-          <Text style={{...styles.bottomText, color: Colors.TEXT}}>{i18n.t(LocalizationKey.NOT_HAS_AN_ACCOUNT)} ?</Text>
-          <Text style={{...styles.bottomText, color: Colors.PRIMARY}} onPress={() => onNavigate(RootScreens.REGISTER)}>{i18n.t(LocalizationKey.SIGNUP)}</Text>
+          <Text style={{ ...styles.bottomText, color: Colors.TEXT }}>
+            {i18n.t(LocalizationKey.NOT_HAS_AN_ACCOUNT)} ?
+          </Text>
+          <Text
+            style={{ ...styles.bottomText, color: Colors.PRIMARY }}
+            onPress={() => onNavigate(RootScreens.REGISTER)}
+          >
+            {i18n.t(LocalizationKey.SIGNUP)}
+          </Text>
         </View>
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={!!error}
+        onRequestClose={() => {
+          setError("");
+        }}
+      >
+        <View style={styles.centerModal}>
+          <View
+            style={{
+              ...styles.modalView,
+              ...Platform.select({
+                ios: { ...styles.iosShadow },
+                android: { ...styles.androidShadow },
+              }),
+            }}
+          >
+            <Text>{error}</Text>
+            <Pressable style={styles.modalButton} onPress={() => setError("")}>
+              <Text style={{ color: "#fff", textAlign: "center" }}>
+                Đã hiểu
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -99,8 +166,8 @@ const styles = StyleSheet.create({
 
   content: {
     flex: 1,
-    display: 'flex',
-    justifyContent: 'space-between',
+    display: "flex",
+    justifyContent: "space-between",
     width: "100%",
     alignItems: "center",
     backgroundColor: "#fff",
@@ -116,5 +183,42 @@ const styles = StyleSheet.create({
   },
   bottomText: {
     textAlign: "center",
+  },
+
+  centerModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  modalView: {
+    backgroundColor: Colors.WHITE,
+    width: "80%",
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 16,
+    padding: 16,
+  },
+
+  iosShadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 40 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+  },
+
+  androidShadow: {
+    elevation: 16,
+  },
+
+  modalButton: {
+    backgroundColor: Colors.ERROR,
+    borderRadius: 16,
+    display: "flex",
+    marginTop: 8,
+    padding: 4,
+    width: "80%",
+    alignItems: "center",
   },
 });
