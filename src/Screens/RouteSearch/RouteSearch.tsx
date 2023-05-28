@@ -2,13 +2,17 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'r
 import React from 'react'
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { useNavigation } from '@react-navigation/native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { RootScreens } from '..';
 
-const RouteSearch = () => {
+const RouteSearch = (props: any) => {
   const navigation = useNavigation();
+  const {
 
+  } = props;
   return (
     <View style={styles.container}> 
-      <View style={{flexDirection: 'row', padding: 10, alignItems: 'center'}}>
+      <View style={{flexDirection: 'row', padding: 10, alignItems: 'center', marginBottom: 10}}>
         <TouchableOpacity>
           <MuiIcons
           name={'arrow-back'}
@@ -17,13 +21,33 @@ const RouteSearch = () => {
           onPress={() => navigation.goBack()}
           />
         </TouchableOpacity>
-        <TextInput
+        
+        {/* <TextInput
         // value={fromInput}
         // onChangeText={text => setFromInput(text)}
         placeholderTextColor="#C6C6C6"
         placeholder="Nhập vị trí của bạn"
         style={{flex: 1, backgroundColor: '#fff', fontSize: 16, paddingVertical: 3, paddingLeft: 10, marginLeft: 10, borderRadius: 10}}
+        /> */}
+        <GooglePlacesAutocomplete
+        placeholder='Nhập vị trí của bạn'
+        onPress={(data, details = null) => {
+          // 'details' is provided when fetchDetails = true
+
+          navigation.navigate({
+            name: RootScreens.ROUTE_SEARCH_RESULT,
+            params: { fromDetails: details },
+            merge: true,
+          } as never);
+        }}
+        query={{
+          key: 'AIzaSyAa1uEwsBYBCcsYC6ufJIV4EaJ8wH_cxPg',
+          language: 'vi',
+        }}
+        styles={{}}
         />
+        
+        
       </View>
       
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, width: '100%'}}>

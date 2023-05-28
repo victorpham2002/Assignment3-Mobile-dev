@@ -1,24 +1,39 @@
+
 import { View, Text, StyleSheet, Platform, TextInput, TouchableOpacity, Button } from 'react-native'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { FlatList } from 'native-base';
 import { SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootScreens } from '..';
+import { GooglePlaceDetail, GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
+
+const GOOGLE_API_KEY = 'AIzaSyAa1uEwsBYBCcsYC6ufJIV4EaJ8wH_cxPg';
+type Position = {
+  place_id: string | undefined,
+}
+
 
 const RouteSearchResult = (props: any) => {
   const {
     useFindRoute,
   } = props;
+
   const navigation = useNavigation();
-  const [fromInput, setFromInput] = useState('');
-  const [toInput, setToInput] = useState('');
+  const [fromDetails, setFromDetails] = useState<any>(null);
+  const [toDetails, setToDetails] = useState<any>(null);
+  const [fromPositon, setFromPositon] = useState<Position | null>(null);
+  const [toPositon, setToPositon] = useState<Position | null>(null);
+  const [routes, setRoutes] = useState<any>([]);
 
   return (
     <View style={styles.container}>
       <View style={styles.searchBarContainner}> 
           <View>
-            <View style={styles.inputTextContainer}>
+            <View style={styles.inputTextContainer}
+            
+            >
                 <Text style={{color: '#1570EF', fontWeight: 'bold'}}>From</Text>
                 <MuiIcons
                 name="location-on"
@@ -26,13 +41,20 @@ const RouteSearchResult = (props: any) => {
                 size={24}
                 />
 
-                <TextInput
-                value={fromInput}
-                onChangeText={text => setFromInput(text)}
-                placeholderTextColor="#1570EF"
-                placeholder="[Vị trí của bạn]"
-                style={styles.inputText}
-                />
+                 <GooglePlacesAutocomplete
+                  placeholder='Nhập vị trí của bạn'
+                  onPress={(data, details = null) => {
+                    // 'details' is provided when fetchDetails = true
+                    setFromDetails(details);
+                    // setFromPositon({lat: details?.geometry.location.lat, lng: details?.geometry.location.lng})
+                    setFromPositon({place_id: details?.place_id})
+                  }}
+                  query={{
+                    key: GOOGLE_API_KEY,
+                    language: 'vi',
+                  }}
+                  styles={{}}
+                  />
             </View>
 
             <View style={styles.inputTextContainer}>
@@ -43,22 +65,30 @@ const RouteSearchResult = (props: any) => {
                 size={24}
                 />
 
-                <TextInput
-                value={toInput}
-                onChangeText={text => setToInput(text)}
-                placeholderTextColor="#C6C6C6"
-                placeholder="Nhập điểm đến"
-                style={styles.inputText}
-                />
+                <GooglePlacesAutocomplete
+                  placeholder='Nhập điểm đến'
+                  onPress={(data, details = null) => {
+                    // 'details' is provided when fetchDetails = true
+                    setToDetails(details);
+                    // setToPositon({lat: details?.geometry.location.lat, lng: details?.geometry.location.lng})
+                    setToPositon({place_id: details?.place_id})
+
+                  }}
+                  query={{
+                    key: GOOGLE_API_KEY,
+                    language: 'vi',
+                  }}
+                  styles={{}}
+                  />
             </View>
 
-            <TouchableOpacity 
+            {/* <TouchableOpacity 
             style={styles.swapIcon}
             activeOpacity={0.7}
             onPress={() => {
-              const temp = fromInput;
-              setFromInput(toInput);
-              setToInput(temp);
+              const temp = fromDetails;
+              setFromInputText(toDetails);
+              setToInputText(temp);
             }}
             >
               <MuiIcons 
@@ -66,7 +96,7 @@ const RouteSearchResult = (props: any) => {
               color="#fff"
               size={24}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           
           <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 20}}>
@@ -91,7 +121,14 @@ const RouteSearchResult = (props: any) => {
               borderRadius: 10
             }}
             activeOpacity={0.5}
-            onPress={() => useFindRoute(fromInput, toInput)}
+            onPress={async () => {
+              console.log(fromPositon?.place_id, ' _____ ' , toPositon?.place_id);
+              const url = `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${fromPositon?.place_id}&destination=place_id:${toPositon?.place_id}&mode=transit&transit_mode=bus&language=vi&key=${GOOGLE_API_KEY}`;
+              const res = await fetch(url)
+              const data = await res.json();
+              console.log(data);
+              setRoutes(data.routes);
+            }}
             >
               <Text
               style={{
@@ -110,15 +147,28 @@ const RouteSearchResult = (props: any) => {
       </View>
       <SafeAreaView style={styles.searchResultContainner}>
         <FlatList
-        data={[1,1,1,1,1,1,1,1,1,1,1]}
-        renderItem={item => {
+        data={routes as any[]}
+        renderItem={route => {
+          const item = route.item;
           return (
             <TouchableOpacity
             style={styles.item}
-            onPress={() => navigation.navigate(RootScreens.ROUTE_DETAIL as never)}
+            onPress={() => navigation.navigate(...[RootScreens.ROUTE_DETAIL, {routing: item.legs[0].steps}] as never)}
             >
-              <Text style={styles.itemTitle}>Bus 33</Text>
-              <Text style={styles.itemDescription}>Đón xe tại trạm: Bến xe An Sương</Text>
+              <Text style={styles.itemTitle}>{
+                (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT") 
+                ? 
+                `Bus ${(item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT").transit_details.line.short_name}`
+                :
+                `Đi bộ`
+              }</Text>
+              <Text style={styles.itemDescription}>{
+                (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT") ? 
+                
+                (item.legs[0].steps as any[]).find((step) => step.travel_mode == "TRANSIT").transit_details.line.name
+                : 
+                ""
+              }</Text>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginRight: 20}}>
                   <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
@@ -128,7 +178,20 @@ const RouteSearchResult = (props: any) => {
                     size={24}
                     />
                     <Text style={{color: '#0056CF', fontSize: 16, marginLeft: 5}}>
-                      365 mét
+                      { 
+                        Math.round((item.legs as any[]).reduce((total, leg) => {
+                          console.log('in walk')
+                          return total + (leg.steps as any[]).reduce((total, step) => {
+                            if(step.travel_mode == "WALKING"){
+                              return total + step.distance.value;
+                            }
+                            return 0;
+                          }, 0)
+                        }, 0)) 
+                      }
+                      {
+                        ` m`
+                      }
                     </Text>
                   </View>
 
@@ -139,7 +202,12 @@ const RouteSearchResult = (props: any) => {
                     size={24}
                     />
                     <Text style={{color: '#0056CF', fontSize: 16, marginLeft: 5}}>
-                      78 phút
+                      {
+                        Math.round((item.legs as any[]).reduce((total, leg) => {
+                          return total + leg.duration.value;
+                        }, 0) / 60)
+                      }
+                      {` phút`}
                     </Text>
                   </View>
                 </View>
@@ -152,7 +220,13 @@ const RouteSearchResult = (props: any) => {
                     size={24}
                     />
                     <Text style={{color: '#0056CF', fontSize: 16, marginLeft: 5}}>
-                      13.8 km
+                      {
+                        Math.round((item.legs as any[]).reduce((total, leg) => {
+                          return total + leg.distance.value;
+                        }, 0) / 1000 * 10) / 10
+                        
+                      }
+                      {` km`} 
                     </Text>
                   </View>
 
@@ -163,7 +237,13 @@ const RouteSearchResult = (props: any) => {
                     size={24}
                     />
                     <Text style={{color: '#0056CF', fontSize: 16, marginLeft: 5}}>
-                      23.000 VND
+                      {
+                        item.fare ?
+                        `${item.fare.value} VND`
+                        :
+                        `0 VND`
+                      
+                      }
                     </Text>
                   </View>
                 </View>
@@ -207,8 +287,9 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 14,
-    paddingVertical: 3,
+    paddingVertical: 10,
     flex: 1,
+    color: '#C6C6C6',
   },
   inputTextContainer: {
     flexDirection: 'row',
