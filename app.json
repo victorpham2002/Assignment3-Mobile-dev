@@ -11,12 +11,12 @@
     
     ],
     "orientation": "portrait",
-    "icon": "./assets/login_img.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/login_img.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "CDE2FF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
