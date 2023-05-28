@@ -11,7 +11,7 @@
     
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/login_img.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/login_img.png",
@@ -58,6 +58,5 @@
         "projectId": "fbcaf196-9f91-4f5e-9fe3-eaa08afd3ddf"
       }
     }
-
   }
 }
