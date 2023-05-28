@@ -6,9 +6,7 @@
     "originalFullName": "@owner/slug",
     "version": "1.1.0",
     "scheme": [
-      
       "fb587952573481521"
-    
     ],
     "orientation": "portrait",
     "icon": "./assets/logo.png",
@@ -41,7 +39,7 @@
         }
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.hpcc.bussmart"
@@ -55,8 +53,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "fbcaf196-9f91-4f5e-9fe3-eaa08afd3ddf"
+        "projectId": "b7c2a710-4e8d-48a7-be15-ce7fe5483246"
       }
-    }
+    },
+    "owner": "victorpham"
   }
 }
