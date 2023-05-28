@@ -6,7 +6,9 @@
     "originalFullName": "@owner/slug",
     "version": "1.1.0",
     "scheme": [
+      
       "fb587952573481521"
+    
     ],
     "orientation": "portrait",
     "icon": "./assets/login_img.png",
@@ -53,7 +55,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "35632d70-d4c7-4659-98c6-92b38d506353"
+        "projectId": "fbcaf196-9f91-4f5e-9fe3-eaa08afd3ddf"
       }
     }
   }
