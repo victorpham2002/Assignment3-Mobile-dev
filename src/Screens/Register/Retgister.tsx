@@ -114,9 +114,9 @@ export const Register = (props: IRegisterProps) => {
           </Text>
           <Text
             style={styles.bottomText}
-            onPress={() => props.onNavigate(RootScreens.REGISTER)}
+            onPress={() => props.onNavigate(RootScreens.LOGIN)}
           >
-            {i18n.translate(LocalizationKey.SIGNUP)}
+            {i18n.translate(LocalizationKey.SIGNIN)}
           </Text>
         </View>
       </View>
