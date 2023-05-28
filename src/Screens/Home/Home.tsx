@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch } from "@/Hooks/redux";
 import { logout } from "@/Store/reducers/user";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native";
 import { RootScreens } from "..";
 
 export interface IHomeProps {
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
   },
   option: {
     backgroundColor: "#fff",
+    minWidth: 150,
     width: "45%",
     display: "flex",
     alignItems: "center",
