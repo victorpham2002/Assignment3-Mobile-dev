@@ -19,11 +19,8 @@ import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
 import { RootScreens } from "..";
-<<<<<<< HEAD
 import { Config } from "@/Config";
-=======
 import { Item } from "react-native-paper/lib/typescript/src/components/Drawer/Drawer";
->>>>>>> 310d6805031d5422f8a1419abf0ead3066d81559
 
 export interface ILoginProps {
   route: string;
@@ -113,11 +110,7 @@ type RouteDetail = {
     const URL = API_ENDPOINT + route;
     const getRoute = async () => {
       try {
-<<<<<<< HEAD
         const response = await fetch(`${Config.BACKEND_URL}/routes/${route}`);
-=======
-        const response = await fetch(URL);
->>>>>>> 310d6805031d5422f8a1419abf0ead3066d81559
         const json = await response.json();
         if (json.Tickets === "") {
           json.Tickets = []
