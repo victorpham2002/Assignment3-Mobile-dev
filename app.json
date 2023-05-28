@@ -5,12 +5,14 @@
     "currentFullName": "@owner/slug",
     "originalFullName": "@owner/slug",
     "version": "1.1.0",
-    "scheme": ["fb587952573481521"],
+    "scheme": [
+      "fb587952573481521"
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/login_img.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -45,14 +47,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-    ],
+    "plugins": [],
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
     "extra": {
-
+      
     }
+
   }
 }
-
