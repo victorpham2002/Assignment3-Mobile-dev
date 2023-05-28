@@ -14,7 +14,6 @@ import { StatusBar } from "expo-status-bar";
 import { Colors } from "@/Theme/Variables";
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
-import MapView from 'react-native-maps';
 import { RootScreens } from "..";
 import { Config } from "@/Config";
 import { Item } from "react-native-paper/lib/typescript/src/components/Drawer/Drawer";
