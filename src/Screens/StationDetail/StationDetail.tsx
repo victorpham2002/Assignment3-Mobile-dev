@@ -1,5 +1,4 @@
-import { i18n, LocalizationKey } from "@/Localization";
-import React, { useState } from "react";
+import React, { useEffect , useState } from "react";
 import {
   View,
   Text,
@@ -9,224 +8,642 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { HStack, Spinner, Heading } from "native-base";
-import { User } from "@/Services";
-import Header from "@/Components/Header/Header";
 import { Colors } from "@/Theme/Variables";
-import MuiIcons from "@expo/vector-icons/MaterialIcons";
-import { TextInput } from "react-native";
-import MapView from 'react-native-maps';
-import { RootScreens } from "..";
-
+import MapView, { LatLng, Marker, Polyline } from 'react-native-maps';
 
 export interface ILoginProps {
-  isLoading: boolean;
-  onNavigate: (string: RootScreens) => void;
+  id: number;
+  setOptions: (route: string) => void;
+}
+const API_ENDPOINT = "https://assignment3-mobiledev-nhom1-busappapi.onrender.com/routes/";
+
+type RouteId = {
+  id: number;
 }
 
-const StationData = {
-    title: 'Tuyến số 08',
-    description: {
-      number: '32',
-      name: 'Bến xe Miền Tây - Bến xe Ngã Tư Ga',
-      time: '05:40 - 20:30',
-      price: '7000',
-      studentPrice: '3000',
-      timePerTrip: '6 - 10 min',
-      numberOfTrip: '86',
-    },
-    timeTable: ['1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '22:00'],
-    goRoute: ['Bến xe An sương', 'Kí túc xá khu A', 'Trường Đại học Bách Khoa Thành Phố Hồ Chí Minh'],
-    returnRoute : ['Bến xe An sương', 'Kí túc xá khu A', 'Kí túc xá khu A'],
-  }
+type RouteDetail = {
+  RouteId: number;
+  RouteNo: string;
+  RouteName: string;
+  Color: string;
+  Type: string;
+  Distance: number;
+  Orgs: string;
+  TimeOfTrip: string;
+  Headway: string;
+  OperationTime: string;
+  NumOfSeats: string;
+  OutBoundName: string;
+  InBoundName: string;
+  OutBoundDescription: [string];
+  InBoundDescription: [string];
+  TotalTrip: string;
+  Tickets: [string];
+};
 
-  const StationGoRoute = ({item}: {item: string}) => (
+type RouteStop = {
+  StopId: number;
+  Code: string;
+  Name: string;
+  StopType: string;
+  Zone: string;
+  Ward: string;
+  AddressNo: string;
+  Street: string;
+  SupportDisability: string;
+  Status: string;
+  Lng: number;
+  Lat: number;
+  Search: string;
+  Routes: string;
+};
+
+type RouteTime = {
+  RouteId: number;
+  TripId: number;
+  TimeTableId: number;
+  StartTime: string;
+  EndTime: string;
+};
+
+type RouteCoordinate = {
+  Lng: number;
+  Lat: number;
+}
+
+  const StationGoRoute = ({item}: {item: RouteStop}) => (
     <View style={styles.routeContainer}>
-      <Image
+      { item ? (
+        <Image
         source={require('../../../assets/Uncheck.png')}
         style={styles.CheckImg}
       />
-      <Text style={styles.normalText}>{item}</Text>
+      ) : (
+        <View>
+        </View>
+      )}
+      <Text style={styles.normalText}>{item.Name}</Text>
     </View>
   );
 
-  var time = new Date();
+  const hours = new Date().getHours();
+  const minutes = new Date().getMinutes();
 
-  const StationTimeRoute = ({item}: {item: string}) => (
+  const StationTimeRoute = ({item}: {item: RouteTime}) => (
     <View style={styles.routeContainer}>
-      { item.split(":")[0] < '4' ? (
+      { parseInt(item.StartTime.split(":")[0], 10) < hours ? (
         <Image
           source={require('../../../assets/Check.png')}
           style={styles.CheckImg}
         />
+      ) : parseInt(item.StartTime.split(":")[0], 10) == hours && parseInt(item.StartTime.split(":")[1], 10) < minutes ? (
+        <Image
+          source={require('../../../assets/Check.png')}
+          style={styles.CheckImg}
+        /> 
       ) : (
         <Image
           source={require('../../../assets/Uncheck.png')}
           style={styles.CheckImg}
-        />
+        />          
       )}
-      <Text style={styles.normalText}>{item}</Text>
+      <Text style={styles.normalText}>{item.StartTime}</Text>
     </View>
   );
 
-  const StationInfo = () => (
-    <View style={styles.singleRouteContainer}>
-      <Text style={styles.boldText}>Tuyến số
-        <Text style={styles.normalText}>
-          : {StationData.description.number} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Tên chuyến
-        <Text style={styles.normalText}>
-          : {StationData.description.name} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Thời gian hoạt động
-        <Text style={styles.normalText}>
-          : {StationData.description.time} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Giá vé 
-        <Text style={styles.normalText}>
-          : {StationData.description.price} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Giá vé (Học sinh/sinh viên) 
-        <Text style={styles.normalText}>
-          : {StationData.description.studentPrice} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Giãn cách tuyến
-        <Text style={styles.normalText}>
-          : {StationData.description.timePerTrip} 
-        </Text>
-      </Text>
-      <Text style={styles.boldText}>Số chuyến
-        <Text style={styles.normalText}>
-          : {StationData.description.numberOfTrip} 
-        </Text>
-      </Text>
-    </View>
-  );
+  const RouteStartStopsUI = (id : RouteId) => {
+    const RouteId = id.id;
 
-  export const StationDetail = () => {
+    const [startStopsData, setStartStopsData] = useState<RouteStop[]>([]);
+    const startStopsURL = API_ENDPOINT + RouteId.toString() + '/stops/start';
+
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); 
+
+    useEffect(() => {
+      setIsLoading(true);
+
+      fetch(`${startStopsURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setStartStopsData(results);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+    }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList 
+        data={startStopsData}
+        renderItem={StationGoRoute}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      />  
+    );
+  };
+
+  const RouteEndStopsUI = (id : RouteId) => {
+    const RouteId = id.id;
+
+    const [endStopsData, setEndStopsData] = useState<RouteStop[]>([]);
+    const endStopsURL = API_ENDPOINT + RouteId.toString() + '/stops/end';
+
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); 
+
+    useEffect(() => {
+      setIsLoading(true);
+
+      fetch(`${endStopsURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setEndStopsData(results);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+    }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList 
+        data={endStopsData}
+        renderItem={StationGoRoute}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      />  
+    );
+  };
+
+  const RouteStartTimetableUI = (id : RouteId) => {
+    const RouteId = id.id;
+
+    const [startTimetableData, setStartTimetableData] = useState<RouteTime[]>([]);
+    const startTimetablesURL = API_ENDPOINT + RouteId.toString() + '/timetable/start';
+
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); 
+
+    useEffect(() => {
+      setIsLoading(true);
+
+      fetch(`${startTimetablesURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setStartTimetableData(results);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+    }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        data={startTimetableData}
+        renderItem={StationTimeRoute}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      /> 
+    );
+  };
+
+  const RouteEndTimetableUI = (id : RouteId) => {
+    const RouteId = id.id;
+
+    const [endTimetableData, setEndTimetableData] = useState<RouteTime[]>([]);
+    const endTimetablesURL = API_ENDPOINT + RouteId.toString() + '/timetable/end';
+
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); 
+
+    useEffect(() => {
+      setIsLoading(true);
+
+      fetch(`${endTimetablesURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setEndTimetableData(results);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+    }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        data={endTimetableData}
+        renderItem={StationTimeRoute}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      /> 
+    );
+  };
+
+  const RouteDetailUI = (id : RouteId) => {
+    const RouteId = id.id;
+
+    const [data, setData] = useState<RouteDetail>();
+    const URL = API_ENDPOINT + RouteId.toString();
+
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); 
+
+    useEffect(() => {
+      setIsLoading(true);
+
+      fetch(`${URL}`)
+        .then(response => response.json())
+        .then(results => {
+          if (results.Tickets === "") {
+            results.Tickets = []
+          }
+  
+          setData(results);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+
+    }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.singleRouteContainer}>
+        <Text style={styles.boldText}>Tuyến số
+          <Text style={styles.normalText}>
+            : {data?.RouteNo} 
+          </Text>
+        </Text>
+        <Text style={styles.boldText}>Tên chuyến
+          <Text style={styles.normalText}>
+            : {data?.RouteName} 
+          </Text>
+        </Text>
+        {data?.OperationTime ? (
+        <Text style={styles.boldText}>Thời gian hoạt động
+          <Text style={styles.normalText}>
+            : {data?.OperationTime} 
+          </Text>
+        </Text>
+        ) : (
+        <Text style={styles.boldText}>Thời gian hoạt động
+          <Text style={styles.normalText}>
+            : Không có thông tin 
+          </Text>
+        </Text>
+        )}
+        {data?.Tickets.map(item => (
+          <Text style={styles.normalText} key={item}>
+            {item ? item : 'No'}
+          </Text>
+        ))}
+        {data?.TimeOfTrip ? (
+        <Text style={styles.boldText}>Giãn cách tuyến
+          <Text style={styles.normalText}>
+            : {data?.TimeOfTrip} 
+          </Text>
+        </Text>
+        ) : (
+        <Text style={styles.boldText}>Giãn cách tuyến
+          <Text style={styles.normalText}>
+            : Không có thông tin 
+          </Text>
+        </Text>
+        )}
+        {data?.TotalTrip ? (
+        <Text style={styles.boldText}>Số chuyến
+          <Text style={styles.normalText}>
+            : {data?.TotalTrip} 
+          </Text>
+        </Text>
+        ) : (
+        <Text style={styles.boldText}>Số chuyến
+          <Text style={styles.normalText}>
+            : Không có thông tin 
+          </Text>
+        </Text>
+        )}
+      </View>    
+    );
+  };
+
+  export const StationDetail = (props: ILoginProps) => {
+    const { id , setOptions } = props;
+
+    const [RouteId, setRouteId] = useState<number>(id);
+
     const [routeStatus, setRouteStatus] = useState('Go');
     const [navBarStatus, setnavBarStatus] = useState('Time');
 
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const changeRouteStatus = () => {
-        routeStatus === 'Go' ? setRouteStatus('Return') : setRouteStatus('Go');
+      routeStatus === 'Go' ? setRouteStatus('Return') : setRouteStatus('Go');
     }
     
     const changeNavBarStatus = (navBarNewState: string) => {
-        setnavBarStatus(navBarNewState);
+      setnavBarStatus(navBarNewState);
+    }
+
+    const [data, setData] = useState<RouteDetail>();
+    const URL = API_ENDPOINT + id.toString();
+
+    const [startStopsData, setStartStopsData] = useState<RouteStop[]>([]);
+    const startStopsURL = URL + '/stops/start';
+
+    let startStopCoordinate: LatLng[] = [];
+    startStopsData.map(element => startStopCoordinate.push({"latitude": element.Lat, "longitude": element.Lng}));
+
+    const [endStopsData, setEndStopsData] = useState<RouteStop[]>([]);
+    const endStopsURL = URL + '/stops/end';
+
+    let endStopCoordinate: LatLng[] = [];
+    endStopsData.map(element => endStopCoordinate.push({"latitude": element.Lat, "longitude": element.Lng}));
+  
+
+    const [routeCoordinate, setrouteCoordinate] = useState<RouteCoordinate>({"Lat": 10.866498, "Lng":  106.802377});
+    const routeCoordinteURL = URL + '/coordinate/start';
+
+    
+    useEffect(() => {
+      setIsLoading(true);
+
+      fetch(`${URL}`)
+        .then(response => response.json())
+        .then(results => {
+          if (results.Tickets === "") {
+            results.Tickets = []
+          }
+  
+          setData(results);
+          setOptions(results.RouteNo as string);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+
+      fetch(`${startStopsURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setStartStopsData(results);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+
+      fetch(`${endStopsURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setEndStopsData(results);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+
+      fetch(`${routeCoordinteURL}`)
+        .then(response => response.json())
+        .then(results => {  
+          setrouteCoordinate(results);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setError(err);
+        });
+
+    }, []);
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#5500dc" />
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 18}}>
+            Vui lòng kiểm tra kết nối mạng.
+          </Text>
+        </View>
+      );
     }
 
     return (
       <View style={styles.container}>
         <View style={styles.MapContainer}>
         <MapView
-              style={styles.Img}
-              initialRegion={{
-                latitude: 10.88063531088379,
-                longitude:  106.80765799339738,
-                latitudeDelta: 0.0942,
-                longitudeDelta: 0.042,
-              }}
-              zoomEnabled={true}
-              zoomControlEnabled={true}
-
+          style={styles.Img}
+          initialRegion={{
+            latitude: 10.866498,
+            longitude:  106.802377,
+            latitudeDelta: 0.0942,
+            longitudeDelta: 0.042,
+          }}
+          region={{
+            latitude: routeCoordinate.Lat,
+            longitude:  routeCoordinate.Lng,
+            latitudeDelta: 0.0942,
+            longitudeDelta: 0.042,
+          }}          
+          zoomEnabled={true}
+          zoomControlEnabled={true}
+        >
+          { routeStatus === 'Go' ? startStopsData.map(element => (
+            <Marker
+              key={element.StopId}
+              coordinate={{latitude: element.Lat, longitude: element.Lng}}
+              title={element.Name}
+              description={element.AddressNo}
             />
+          )) : endStopsData.map(element => (
+            <Marker
+              key={element.StopId}
+              coordinate={{latitude: element.Lat, longitude: element.Lng}}
+              title={element.Name}
+              description={element.AddressNo}
+            />
+          ))}
+
+          { routeStatus === 'Go' ? (
+            <Polyline
+              coordinates={startStopCoordinate}            
+              strokeColor="#1570EF" 
+              strokeColors={[
+                '#1570EF',
+                '#000000',
+              ]}
+              strokeWidth={3}
+            />
+          ) : (
+            <Polyline
+              coordinates={endStopCoordinate}            
+              strokeColor="#1570EF" 
+              strokeColors={[
+                '#1570EF',
+                '#000000',
+              ]}
+              strokeWidth={3}
+            />
+          )}
+        </MapView>
         </View>
 
         <View style={styles.BasicInfoContainer}>
-            <Text style={styles.normalText}>Bến xe Miền Tây - Bến xe Ngã Tư Ga</Text>      
+            <Text style={styles.normalTextBlock}>{data?.RouteName}</Text>         
             <TouchableOpacity
-                style={styles.button}
-                onPress={() => changeRouteStatus()}
-                activeOpacity={0.5}>
-                {routeStatus === 'Go' ? 
-                <Text style={styles.buttonText}>Lượt đi</Text> : 
-                <Text style={styles.buttonText}>Lượt về</Text>}
+              style={styles.button}
+              onPress={() => changeRouteStatus()}
+              activeOpacity={0.5}>
+              {routeStatus === 'Go' ? 
+              <Text style={styles.buttonText}>Lượt đi</Text> : 
+              <Text style={styles.buttonText}>Lượt về</Text>}
             </TouchableOpacity>
         </View>
 
         <View style={styles.NavigatorContainer}>
             <TouchableOpacity
-            style={navBarStatus === 'Time' ? styles.navigationLeftButtonOn : styles.navigationLeftButton}
-            onPress={() => changeNavBarStatus('Time')}
-            activeOpacity={0.5}>
-            <Text style={styles.navigationText}>Biểu đồ giờ</Text>
+              style={navBarStatus === 'Time' ? styles.navigationLeftButtonOn : styles.navigationLeftButton}
+              onPress={() => changeNavBarStatus('Time')}
+              activeOpacity={0.5}>
+              <Text style={styles.navigationText}>Biểu đồ giờ</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-            style={navBarStatus === 'Route' ? styles.navigationMiddleButtonOn : styles.navigationMiddleButton}
-            onPress={() => changeNavBarStatus('Route')}
-            activeOpacity={0.5}>
-            <Text style={styles.navigationText}>Lộ trình</Text>
+              style={navBarStatus === 'Route' ? styles.navigationMiddleButtonOn : styles.navigationMiddleButton}
+              onPress={() => changeNavBarStatus('Route')}
+              activeOpacity={0.5}>
+              <Text style={styles.navigationText}>Lộ trình</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
-            style={navBarStatus === 'Info' ? styles.navigationRightButtonOn : styles.navigationRightButton}
-            onPress={() => changeNavBarStatus('Info')}
-            activeOpacity={0.5}>
-            <Text style={styles.navigationText}>Thông tin</Text>
+              style={navBarStatus === 'Info' ? styles.navigationRightButtonOn : styles.navigationRightButton}
+              onPress={() => changeNavBarStatus('Info')}
+              activeOpacity={0.5}>
+              <Text style={styles.navigationText}>Thông tin</Text>
             </TouchableOpacity>        
         </View>        
 
-        { navBarStatus === 'Time' ? (
-          <View style={styles.NavigatorContainer}>
-            <TouchableOpacity
-              style={styles.navigationArrow}
-              /*onPress={() => changeNavBarStatus('Time')}*/
-              activeOpacity={0.5}>
-                  <Image
-                    source={require('../../../assets/Arrow1.png')}
-                    style={styles.ArrowImg}
-                  />
-            </TouchableOpacity>
-
-            <View style={styles.navigationArrow}>
-              <Text style={styles.normalText}>Hôm nay</Text>
-            </View>
-            
-            <TouchableOpacity
-              style={styles.navigationArrow}
-              /*onPress={() => changeNavBarStatus('Time')}*/
-              activeOpacity={0.5}>
-                  <Image
-                    source={require('../../../assets/Arrow2.png')}
-                    style={styles.ArrowImg}
-                  />
-            </TouchableOpacity>      
-          </View>
-        ) : (
-          <View style={styles.emptySpace}>
-              
-          </View>
-        )}
-
         <SafeAreaView style={styles.DetailInfoContainer}>
-            { navBarStatus === 'Route' ? routeStatus === 'Go' ? (
-                <FlatList 
-                data={StationData.goRoute}
-                renderItem={StationGoRoute}
-                />     
-            ) : (
-                <FlatList
-                data={StationData.returnRoute}
-                renderItem={StationGoRoute}
-                />               
-            ) : navBarStatus === 'Time' ? (
-                <FlatList
-                data={StationData.timeTable}
-                renderItem={StationTimeRoute}
-                />               
-            ) : (
-                <StationInfo
-                />               
-            )}
+          { navBarStatus === 'Route' ?  routeStatus === 'Go' ? (
+            <RouteStartStopsUI id={RouteId} />
+          ) : (
+            <RouteEndStopsUI id={RouteId} />     
+          ) : navBarStatus === 'Time' ? routeStatus === 'Go' ? (
+            <RouteStartTimetableUI id={RouteId} />
+          ) : (
+            <RouteEndTimetableUI id={RouteId} />
+          ) : (
+            <RouteDetailUI id={RouteId} />
+          )}
         </SafeAreaView>
 
     </View>
@@ -268,6 +685,7 @@ const StationData = {
         backgroundColor: '#ffffff',
         alignItems: 'center',
         flexDirection: 'column',
+        width: '95%',
       },
       button: {
         backgroundColor: '#CDE2FF',
@@ -352,6 +770,7 @@ const StationData = {
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         color: '#0056CF',
+        width: '95%',
       },
       routeContainer: {
         flexDirection: 'row',
@@ -372,6 +791,10 @@ const StationData = {
       },
       normalText: {
         color: '#0056CF',
+      },
+      normalTextBlock: {
+        color: '#0056CF',
+        width: '65%',
       },
       boldText: {
         color: '#0056CF',

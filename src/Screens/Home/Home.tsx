@@ -10,37 +10,47 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { HStack, Spinner, Heading } from "native-base";
-import { User } from "@/Services";
 import Header from "@/Components/Header/Header";
 import { Colors } from "@/Theme/Variables";
 import MuiIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native";
 import MapView from 'react-native-maps';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch } from "@/Hooks/redux";
+import { logout } from "@/Store/reducers/user";
+import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { RootScreens } from "..";
 
 export interface IHomeProps {
-  data: User | undefined;
+  data: any | undefined;
   isLoading: boolean;
+  onNavigate: any
 }
 
 export const Home = (props: IHomeProps) => {
   const { data, isLoading } = props;
+  const dispatch = useAppDispatch()
+  const navigation = useNavigation()
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       {isLoading ? (
-        <HStack space={2} justifyContent="center">
-          <Spinner accessibilityLabel="Loading posts" />
-          <Heading color="primary.500" fontSize="md">
-            {i18n.t(LocalizationKey.LOADING)}
-          </Heading>
-        </HStack>
+        <View style={{display: 'flex', alignContent:'center', justifyContent: 'center', flex: 1}}>
+          <HStack space={2} justifyContent="center">
+            <Spinner accessibilityLabel="Loading posts" />
+            <Heading color="primary.500" fontSize="md">
+              {i18n.t(LocalizationKey.LOADING)}
+            </Heading>
+          </HStack>
+        </View>
       ) : (
         <React.Fragment>
           <Header
             title={i18n.t(LocalizationKey.HOME)}
             LeftIcon={<MuiIcons name="menu" size={28} color={Colors.WHITE} />}
             RightIcon={
-              <MuiIcons name="person" size={28} color={Colors.WHITE} />
+              <MuiIcons name="person" size={28} color={Colors.WHITE} onPress={() => props.onNavigate(RootScreens.PROFILE)} />
             }
           />
 
@@ -61,6 +71,7 @@ export const Home = (props: IHomeProps) => {
               <TextInput
                 placeholderTextColor="#C6C6C6"
                 placeholder="Tìm kiếm địa điểm"
+                onPressIn={() => navigation.navigate(...[RootScreens.ROUTE_SEARCH_RESULT] as never)}
                 style={{
                   ...styles.inputText,
                   ...Platform.select({
@@ -77,7 +88,8 @@ export const Home = (props: IHomeProps) => {
               />
             </View>
             <View style={styles.optionContainer}>
-              <View
+              <TouchableOpacity
+                onPress={() => navigation.navigate(RootScreens.STATIONLIST as never)}
                 style={{
                   ...styles.option,
                   ...Platform.select({
@@ -90,8 +102,9 @@ export const Home = (props: IHomeProps) => {
                 <Text style={{ marginTop: 12, color: Colors.PRIMARY }}>
                   Tra cứu
                 </Text>
-              </View>
-              <View
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate(RootScreens.ROUTE_SEARCH as never)}
                 style={{
                   ...styles.option,
                   ...Platform.select({
@@ -104,7 +117,7 @@ export const Home = (props: IHomeProps) => {
                 <Text style={{ marginTop: 12, color: Colors.PRIMARY }}>
                   Tìm đường
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </React.Fragment>
@@ -146,7 +159,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    zIndex: 2
+    zIndex: 2,
   },
   option: {
     backgroundColor: "#fff",
