@@ -11,12 +11,12 @@
     
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/login_img.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "CDE2FF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
@@ -58,6 +58,5 @@
         "projectId": "fbcaf196-9f91-4f5e-9fe3-eaa08afd3ddf"
       }
     }
-
   }
 }
