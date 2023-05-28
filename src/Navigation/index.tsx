@@ -21,7 +21,7 @@ export type RootStackParamList = {
   [RootScreens.LOGIN]: undefined;
   [RootScreens.REGISTER]: undefined;
   [RootScreens.STATIONLIST]: undefined;
-  [RootScreens.STATIONDETAIL]: {id: number} ;
+  [RootScreens.STATIONDETAIL]: {id: number} | undefined ;
   [RootScreens.ONBOARDING]: undefined;
   [RootScreens.ROUTE_SEARCH_RESULT]: undefined;
   [RootScreens.ROUTE_SEARCH]: undefined;
@@ -36,8 +36,7 @@ const ApplicationNavigator = () => {
     <NavigationContainer>
       <StatusBar />
       <RootStack.Navigator 
-        initialRouteName={RootScreens.STATIONLIST}
-      <RootStack.Navigator initialRouteName={RootScreens.ROUTE_DETAIL}
+        initialRouteName={RootScreens.HOME}
         screenOptions={{
           headerStyle: {
             backgroundColor: '#1570EF',
@@ -102,14 +101,6 @@ const ApplicationNavigator = () => {
           component={RouteSearchResultContainer}
           options={{
             title: 'Tìm đường',
-            headerStyle: {
-              backgroundColor: '#1570EF',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
-            headerTitleAlign: 'center',
           }}
         />
         <RootStack.Screen
@@ -123,15 +114,7 @@ const ApplicationNavigator = () => {
           name={RootScreens.ROUTE_DETAIL}
           component={RouteDetailContainer}
           options={{
-            title: 'Tìm đường',
-            headerStyle: {
-              backgroundColor: '#1570EF',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
-            headerTitleAlign: 'center',
+            headerShown: false,
           }}
         />
 
